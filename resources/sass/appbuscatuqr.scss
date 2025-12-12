@@ -1,0 +1,57 @@
+// Estilos específicos para BuscaTuQR
+
+.search-page {
+    min-height: 100vh;
+    padding-top: 2rem;
+}
+.card-body{
+   padding: 20px !important;
+}
+.ticket-header {
+    background: linear-gradient(90deg, #0d9fb2, #0a7f8f);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.form-control:focus{
+    border-color: #0d9fb2;
+    box-shadow: 0 0 0 0.2rem rgba(13, 159, 178, 0.25);
+}
+.border-2 {
+    border-radius: 15px !important;
+    border: 2px solid #0d9fb2!important;
+}
+.btn:hover {
+    background-color: #0a7f8f !important;
+    border-color: #0a7f8f !important;
+
+}
+.qr-container {
+    border: 2px dashed #0d9fb2;
+}
+.bg-oscuro{
+    background-color: #f0f4f7 !important;
+
+}
+.ticket-card {
+    border-radius: 15px !important;
+    max-width: 950px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animación suave */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
+}
+
+@media (max-width: 768px) {
+    .ticket-card {
+        padding: 1.5rem;
+    }
+}
