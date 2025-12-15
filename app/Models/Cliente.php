@@ -44,6 +44,7 @@ class Cliente extends Model
             'uuidmatriculaimportacion',
             'tipodocumento',
             'anioegreso',
+            'isbeca18',
             'estado',
     ];
 
@@ -110,9 +111,18 @@ class Cliente extends Model
     {
         $matriculaname = "No";
 
-        if($this->ismatricula) $matriculaname = "Si"; 
-        
+        if($this->ismatricula) $matriculaname = "Si";
+
         return $matriculaname;
+    }
+
+     public function getBeca18nameAttribute()
+    {
+        $beca18name = "No";
+
+        if($this->isbeca18) $beca18name = "Si";
+
+        return $beca18name;
     }
 
     //para mostrar el nombre y ya no el id en el listado

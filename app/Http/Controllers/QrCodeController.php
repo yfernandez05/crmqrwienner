@@ -45,16 +45,21 @@ class QrCodeController extends Controller
     {
         $result = '';
 
-        if(Auth()->user()->idrol == RuleManager::PERSONAL_ATTENDANCE_ACCESS){
-            $result = $this->readingAssistanceQR($dataQR);
-        }
+        try {
+            if(Auth()->user()->idrol == RuleManager::PERSONAL_ATTENDANCE_ACCESS){
+                $result = $this->readingAssistanceQR($dataQR);
+            }
 
-        if(Auth()->user()->idrol == RuleManager::PERSONAL_STAND_ACCESS){
-            $result = $this->readingStandQR($dataQR);
-        }
+            if(Auth()->user()->idrol == RuleManager::PERSONAL_STAND_ACCESS){
+                $result = $this->readingStandQR($dataQR);
+            }
 
-        if(empty($result)){
-            $result = ResultManager::errorMessage("No se pudo leer el QR. Intentelo nuevamente.");
+            if(empty($result)){
+                $result = ResultManager::errorMessage("No se pudo leer el QR. Intentelo nuevamente.");
+            }
+        } catch (Exception $e) {
+            LogErrorManager::saveInDB($this, __FUNCTION__, $e);
+            $result = ResultManager::errorMessage("Ocurrió un error inesperado. Intente nuevamente.");
         }
 
         return $result;
@@ -69,8 +74,43 @@ class QrCodeController extends Controller
 
             $clientAsisten = Cliente::where(['email' => $dataQR['correo'], 'idcampania' => $dataQR['idcampania'], 'estado' => RuleManager::ACTIVE_STATE])->first();
 
+            if (!$clientAsisten) {
+                return ResultManager::warningMessage(' No se encontró ningún registro válido con este QR.');
+            }
+
+            // Validar campaña solo si el usuario tiene idcampania asignado
+            if (Auth::user()->idcampania && Auth::user()->idcampania !== $clientAsisten->idcampania) {
+                return ResultManager::warningMessage('Este QR no corresponde a este evento. Asegúrate de usar el QR que te fue asignado recientemente.');
+            }
+
+            $anioEgreso = (int) ($clientAsisten->anioegreso ?? 0);
+            $isBeca18 = (int) ($clientAsisten->isbeca18 ?? 0);
+
             if($clientAsisten->asistencia){
-                return ResultManager::warningMessage('<p class="text-center">EL QR YA FUE USADO<p>');
+
+                if ($anioEgreso <= 0) {
+                    return ResultManager::warningMessage('<p class="text-center">EL QR YA FUE USADO<p>');
+                } else {
+
+                    $dataQR['config'] = RuleManager::getQRConfigColor($anioEgreso, $isBeca18);
+                    $config = $dataQR['config'];
+
+                    $textColor = $config['color'] === 'white' ? 'black' : 'white';
+                    $borderColor = $config['color'] === 'white' ? 'gray' : $config['color'];
+
+                    return ResultManager::warningMessage('<p class="text-center">EL QR YA FUE USADO <p>
+                        <h4 style="
+                            text-transform: uppercase;
+                            background-color: ' . $config['color'] . ';
+                            padding: 10px;
+                            margin-top: 1em;
+                            color: ' . $textColor . ';
+                            border: 2px solid ' . $borderColor . ';
+                            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);">
+                            ' . $config['description'] . '
+                        </h4>'
+                    );
+                }
             };
 
             $clientAsisten->asistencia = 1;
@@ -81,6 +121,7 @@ class QrCodeController extends Controller
                 $clientAsisten->fechaasistencia = Carbon::now()->format('y-m-d H:i:s');
             }
 
+            $dataQR['config'] = RuleManager::getQRConfigColor($anioEgreso, $isBeca18);
             $dataQR['ismatricula'] = (int) $clientAsisten->ismatricula;
 
             $clientAsisten->update();
@@ -90,11 +131,9 @@ class QrCodeController extends Controller
         } catch (QueryException $e) {
             LogErrorManager::saveInDB($this, __FUNCTION__, $e);
             $result = ResultManager::errorMessage($errorMsg);
-            dd($e);
         } catch (Exception $e) {
             LogErrorManager::saveInDB($this, __FUNCTION__, $e);
             $result = ResultManager::warningMessage($errorMsg);
-            dd($e);
         }
 
         return $result;
@@ -129,7 +168,7 @@ class QrCodeController extends Controller
                 return ResultManager::warningMessage('<p class="text-center">EL ASISTENTE <b class="font-weight-bold">'.$dataQR['nombre'].'</b> NO MARCO SU ASISTENCIA EN LA ENTRADA.</p>');
             }
 
-           
+
 
             $dataQR['mensaje_exito'] = $evento->mensaje_exito ?? null;
 

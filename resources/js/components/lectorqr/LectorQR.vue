@@ -1,6 +1,6 @@
 <template>
     <div>
-   
+
     <!-- Contenedor principal -->
     <main-content style="padding: 0px;">
         <!-- titulo -->
@@ -20,16 +20,16 @@
                             <h5 class="card-title mb-0">Escanea el QR para validar las asistencias </h5>
                         </div>
                         <div class="form-group col-12 col-md-4 p-2" v-if="!cameraOn">
-                            <div class="row">                                
+                            <div class="row">
                                 <div class="form-group col-12 pt-2 mb-0">
                                     <button @click="toggleScanner(true)"  class="btn btn-primary badge-pill display-2 px-4 shadow-sm">
                                         <i class="fas fa-qrcode"></i>
                                         <span class="hide-menu">ESCANEAR QR</span>
                                     </button>
                                 </div>
-                            </div>                     
+                            </div>
                         </div>
-                        <div class="form-group col-12" v-show="cameraOn">  
+                        <div class="form-group col-12" v-show="cameraOn">
                             <div class="qr-scanner-container">
                                 <div id="video-container">
                                     <div class="form-group col-12 p-1 cont-btn-actions-qr" v-if="cameraOn">
@@ -52,7 +52,7 @@
                         </div>
                     </div>
                 </div>
-            </div>            
+            </div>
 
             <!-- Fomrulario busqueda -->
             <div class="form-row" v-show="authenticatedUser.idrol <= 2 || authenticatedUser.idrol == 6">
@@ -88,7 +88,7 @@
                             <span>No se encontraron opciones</span>
                         </template>
                     </v-select>
-                </div> 
+                </div>
                 <div class="form-group col-12 col-sm-4" v-if="selectedClient" >
                     <div v-if="!selectedClient.isassistance">
                         <button class="btn btn-md btn-info waves-effect badge-pill px-4 shadow-sm" @click="markAttendance()">
@@ -98,7 +98,7 @@
                             </span>
                         </button>
                     </div>
-                </div> 
+                </div>
                 <div class="form-group col-12 mb-0" v-if="selectedClient">
                     <div class="col-sm-12 p-0">
                         <div class="form-row info-cont-qr-search p-2">
@@ -130,13 +130,13 @@
                                 <div class="card-body py-0 py-md-3">
                                     <label class="h6 title-search-qr mb-1 text-info-dark">Asistencia:</label><br>
                                     <span class="badge badge-pill py-1 px-3" :class="selectedClient.isassistance ? 'badge-success':'badge-warning'" v-text="selectedClient.asistencianame"></span>
-                                </div> 
+                                </div>
                             </div>
                             <div class="card col-12 col-md-4 cont-details-info">
                                 <div class="card-body py-0 py-md-3">
                                     <label class="h6 title-search-qr mb-1 text-info-dark">Matricula:</label><br>
                                     <span class="badge badge-pill py-1 px-3" :class="selectedClient.ismatricula ? 'badge-info':'badge-secondary'" v-text="selectedClient.matriculaname"></span>
-                                </div> 
+                                </div>
                             </div>
                             <div v-if="selectedClient?.evento_cliente?.length" class="card col-12 cont-details-info">
                                 <div class="d-flex flex-wrap">
@@ -153,7 +153,7 @@
                             </p>
                         </div>
                     </div>
-                </div>                 
+                </div>
             </div>
 
         </template>
@@ -197,7 +197,7 @@ export default {
         },
 
         setupScanner(){
-            
+
             const videoElement = this.$refs.videoElement;
 
             this.isProcessing = false;
@@ -234,7 +234,7 @@ export default {
             } else {
                 this.scanner.start();
                 this.cameraOn = true;
-            }            
+            }
         },
 
         stopScanner() {
@@ -246,7 +246,7 @@ export default {
             this.cameraOn = false;
             console.log('Apagado', this.scanner);
         },
-       
+
         toggleFlash() {
             if (this.flashOn) {
                 this.turnOffFlash();
@@ -304,7 +304,7 @@ export default {
                 this.isProcessing = false;
                 return;
             }
-            
+
             let vm = this;
             axios.post(`${appApiUrl}/validateqr`, { qrCode: this.qrResult.data })
             .then(function (response) {
@@ -325,13 +325,31 @@ export default {
                     mensajeExitoso = `<div class="cont-alert-main">${result.dataaditional.mensaje_exito}</div>`;
                 }
 
+                let infodatahtml = '';
+                if (result.dataaditional && result.dataaditional.config) {
+                    const config = result.dataaditional.config;
+                    const textColor = config.color === 'white' ? 'black' : 'white';
+                    const borderColor = config.color === 'white' ? 'gray' : config.color;
+                    infodatahtml = `<h4 class="name-qr-response anio-qr-response" style="
+                                        text-transform: uppercase;
+                                        background-color: ${config.color};
+                                        padding: 10px;
+                                        margin-top: 1em;
+                                        color: ${textColor};
+                                        border: 2px solid ${borderColor};
+                                        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);">
+                                        ${config.description}
+                                    </h4>`;
+                }
+
                 if (result.status) {
                     swalAlertSuccessQR(`
                     ${mensajeExitoso}
                     Asistente: <br>
                     <h3 class="name-qr-response mt-1 mb-0 text-primary">${result.dataaditional.nombre}</h3>
                     <p class="email-qr-response mb-1">${result.dataaditional.correo}</p>
-                    ${matriculaText} `, messageResult)
+                    ${matriculaText}
+                    ${infodatahtml}`, messageResult)
                     .then(function(optionSelected){
                         if(optionSelected.value){
                             vm.startScanner();
@@ -389,7 +407,7 @@ export default {
                 warningMessage('Debe Seleccionar un asistente de los resultados para registrar su asistencia.');
                 return;
             }
-            
+
             let vm = this;
             let clientData = {
                 idcliente : this.selectedClient.idcliente,
@@ -403,7 +421,7 @@ export default {
                 let result = response.data;
                 console.log('respuesta: ',result);
 
-                if (result.status) {                    
+                if (result.status) {
                     vm.selectedClient = result.dataaditional;
                     vm.replaceClientInArray(vm.selectedClient);
                     successMessage(result.message, appName);
@@ -421,7 +439,7 @@ export default {
 
         replaceClientInArray(updatedClient) {
             let index = this.clientes.findIndex(c => c.idcliente === updatedClient.idcliente);
-            if (index !== -1) {            
+            if (index !== -1) {
                 this.clientes.splice(index, 1, updatedClient);
             }
         }
@@ -431,10 +449,10 @@ export default {
         // Detener el escáner y limpiar recursos cuando el componente se destruye
         if (this.scanner) {
             this.scanner.stop();
-            this.scanner = null; 
+            this.scanner = null;
             this.cameraOn = false;
             this.flashOn= false;
-        }        
+        }
     },
     components:{
         MainContent,
@@ -453,8 +471,8 @@ export default {
     justify-content: center;
     /* height: 100vh; */
   }
-  
-  
+
+
   #video-container.example-style-2 {
     position: relative;
     width: max-content;

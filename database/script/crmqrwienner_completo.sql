@@ -807,3 +807,15 @@ VALUES
 
 -- Verificar inserción
 SELECT * FROM paginas_dinamicas WHERE slug = 'buscatuqr';
+
+---------------------------------------------
+-- ============================================
+-- MODIFICACIONES A LA TABLA CLIENTES
+-- ============================================
+-- fecha : 12-12-2025
+-- Agregar campos a la tabla clientes
+-- Agregar el campo isbeca18 a la tabla clientes
+ALTER TABLE clientes ADD COLUMN isbeca18 INT NOT NULL DEFAULT 0 AFTER fechaasistencia;
+
+-- Agregar el campo isbeca18 a la tabla evento_cliente
+ALTER TABLE evento_cliente ADD COLUMN isbeca18 INT NOT NULL DEFAULT 0 AFTER fechaasistencia;
