@@ -8,23 +8,23 @@
                     </h3>
 
                     <p class="text-secondary mb-4">
-                        Ingresa tu <strong>correo electrónico</strong>
+                        Ingresa tu <strong>correo electrónico o teléfono</strong>
                         para validar tu participación en el evento.
                     </p>
 
                     <div class="row justify-content-center mb-3">
-                        <!-- Email -->
+                        <!-- Campo único para Email o Teléfono -->
                         <div class="col-md-5 col-12 mb-2 mb-md-0">
                             <input
-                                v-model="cliente.email"
-                                type="email"
+                                v-model="searchValue"
+                                type="text"
                                 class="form-control form-control-lg text-center"
-                                placeholder="Correo electrónico"
+                                placeholder="Correo electrónico o teléfono"
                                 @keyup.enter="buscarClientes"
-                                :class="{ 'is-invalid': errorExists('email') }"
+                                :class="{ 'is-invalid': errorExists('search') }"
                             />
-                            <small class="invalid-feedback d-block" v-if="errorExists('email')">
-                                {{ showError('email').errorDetail }}
+                            <small class="invalid-feedback d-block" v-if="errorExists('search')">
+                                {{ showError('search').errorDetail }}
                             </small>
                         </div>
 
@@ -157,6 +157,7 @@ export default {
                 telefono: "",
                 email: "",
             },
+            searchValue: "",
             error: null,
             errors: [],
             loading: false,
@@ -194,24 +195,28 @@ export default {
             if (this.validateFields().length > 0) {
                 return;
             }
-
+// Detectar si es email o teléfono
             this.filters = {};
-            if (this.cliente.telefono && this.cliente.telefono.length) {
-                this.filters.telefono = this.cliente.telefono;
-            }
-            if (this.cliente.email && this.cliente.email.length) {
+            const value = this.searchValue.trim();
+            
+            // Si contiene @ es un email
+            if (value.includes('@')) {
+                this.filters.email = value;
+            } else {
+                // Si no, es teléfono
+                this.filters.telefono = valuel.length) {
                 this.filters.email = this.cliente.email;
             }
 
             this.listarDatos();
         },
-
-        validateFields() {
-            this.errors = [];
-
-            if (!this.cliente.email) {
-                this.setError("email", "El correo es obligatorio");
-                this.error = "Por favor, ingresa un correo válido.";
+searchValue || !this.searchValue.trim()) {
+                this.setError("search", "Este campo es obligatorio");
+                this.error = "Por favor, ingresa tu correo electrónico o teléfon
+            if (!this.cliente.email && !this.cliente.telefono) {
+                this.setError("email", "Ingresa tu correo o teléfono");
+                this.setError("telefono", "Ingresa tu correo o teléfono");
+                this.error = "Por favor, ingresa un correo o teléfono válido.";
             }
 
             return this.errors;

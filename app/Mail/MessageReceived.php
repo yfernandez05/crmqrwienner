@@ -12,7 +12,7 @@ class MessageReceived extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $subject = 'Wiener FEST';
+    public $subject = 'Tu asistencia está confirmada ¡Nos vemos en el Wiener Fest!';
     public $cliente;
     public $qrCode;
 

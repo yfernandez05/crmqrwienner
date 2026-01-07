@@ -4,7 +4,7 @@
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
             <ul id="sidebarnav">
-                <li class="user-pro"> 
+                <li class="user-pro">
                     <a class="has-arrow waves-effect waves-dark d-flex no-block" href="javascript:void(0)" aria-expanded="false">
                         <img src="{{asset('images/users/1.jpg')}}" alt="user-img" class="img-circle">
                         <span class="hide-menu text-truncate ">{{ Auth::user()->name }}</span>
@@ -36,7 +36,7 @@
                 </li>
                 <div class="dropdown-divider"></div>
                 @endif
-                
+
                 @if (Auth::user()->idrol == Rule::SYSTEM_ADMIN_ROLE && Auth::user()->idcuenta == Rule::SYSTEM_COMPANY_ACCOUNT)
                 <li>
                     <a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false">
@@ -47,27 +47,28 @@
                         <li><router-link :to="{name: 'spa.rol'}">Rol</router-link></li>
                         <li><router-link :to="{name: 'spa.cuenta'}">Cuentas</router-link></li>
                         <li><router-link :to="{name: 'spa.administrarcliente'}">Administrar Cliente</router-link></li>
-                        <li><router-link :to="{name: 'spa.logerror'}">Log Error</router-link></li>  
+                        <li><router-link :to="{name: 'spa.logerror'}">Log Error</router-link></li>
                     </ul>
                 </li>
                 @endif
-                
+
                 @if (in_array(Auth::user()->idrol, Rule::ADMINISTRATORS_ACCESS))
-                <li> 
+                <li>
                     <a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false">
                         <i class="fas fa-user-lock"></i>
                         <span class="hide-menu">Administrador</span>
                     </a>
                     <ul aria-expanded="false" class="collapse">
-                        <li><router-link :to="{name: 'spa.user'}">Usuario</router-link></li>                          
+                        <li><router-link :to="{name: 'spa.user'}">Usuario</router-link></li>
                         <li><router-link :to="{name: 'spa.campania'}">Campañas</router-link></li>
                         <li><router-link :to="{name: 'spa.evento'}">Stands</router-link></li>
                         <li><router-link :to="{name: 'spa.tipoAtencion'}">Tipo de atención</router-link></li>
                         <li><router-link :to="{name: 'spa.buttonmessage'}">Botones directos</router-link></li>
+                        <li><router-link :to="{name: 'spa.configuracionqrcolor'}">Configuración QR Color</router-link></li>
                     </ul>
                 </li>
-                <li><router-link :to="{name: 'spa.import'}"><i class="fas fa-file-import"></i><span class="hide-menu">Importar Registros</span></li></router-link>  
-                <li> 
+                <li><router-link :to="{name: 'spa.import'}"><i class="fas fa-file-import"></i><span class="hide-menu">Importar Registros</span></li></router-link>
+                <li>
                     <router-link class="waves-effect waves-dark" :to="{name: 'spa.cliente'}" aria-expanded="false">
                         <i class="fas fa-user-edit"></i>
                         <span class="hide-menu">Registros</span>
@@ -82,14 +83,14 @@
                 @endif
 
                 @if  (in_array(Auth::user()->idrol, Rule::STANDARD_ACCESS))
-                <li> 
+                <li>
                     <router-link class="has-arrow waves-effect waves-dark" :to="{name: 'spa.cliente'}" aria-expanded="false">
                         <i class="fas fa-user-edit"></i>
                         <span class="hide-menu">Registros</span>
                     </router-link>
-                </li> 
-                @endif    
-                
+                </li>
+                @endif
+
             </ul>
         </nav>
         <!-- End Sidebar navigation -->

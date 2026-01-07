@@ -819,3 +819,45 @@ ALTER TABLE clientes ADD COLUMN isbeca18 INT NOT NULL DEFAULT 0 AFTER fechaasist
 
 -- Agregar el campo isbeca18 a la tabla evento_cliente
 ALTER TABLE evento_cliente ADD COLUMN isbeca18 INT NOT NULL DEFAULT 0 AFTER fechaasistencia;
+
+-- ============================================
+-- TABLA: configuracion_qr_colores
+-- Configuración administrable de colores para QR
+-- ============================================
+
+CREATE TABLE `configuracion_qr_colores` (
+  `idconfig` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `anio_egreso` VARCHAR(10) NULL COMMENT 'Año de egreso, NULL para default',
+  `es_beca18` TINYINT NOT NULL DEFAULT 0 COMMENT '0=No aplica, 1=Sí es Beca18',
+  `color` VARCHAR(50) NOT NULL COMMENT 'Color en hex (#ff0000) o nombre (orange)',
+  `descripcion` VARCHAR(200) NOT NULL COMMENT 'Texto descriptivo que se mostrará',
+  `orden` INT NOT NULL DEFAULT 999 COMMENT 'Orden de prioridad (menor es más prioritario)',
+  `estado` CHAR(1) NOT NULL DEFAULT 'A' COMMENT 'A=Activo, I=Inactivo',
+  `userinsert` VARCHAR(60) DEFAULT 'sistemas@padinsolutions.com',
+  `dateinsert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `userupdate` VARCHAR(60) NULL,
+  `dateupdate` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idconfig`),
+  KEY `idx_anio_beca` (`anio_egreso`, `es_beca18`),
+  KEY `idx_estado_orden` (`estado`, `orden`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Configuración administrable de colores para códigos QR';
+
+-- Insertar configuraciones por defecto
+INSERT INTO `configuracion_qr_colores`
+(`anio_egreso`, `es_beca18`, `color`, `descripcion`, `orden`, `estado`, `dateinsert`)
+VALUES
+('2026', 0, 'orange', 'Cuarto año de secundaria', 1, 'A', NOW()),
+('2025', 0, 'blue', 'Quinto año de secundaria', 2, 'A', NOW()),
+(NULL, 1, '#00bfff', 'Egresado / Beca 18', 3, 'A', NOW()),
+(NULL, 0, 'white', 'Egresado', 999, 'A', NOW());
+
+-- Verificar los registros insertados
+SELECT * FROM configuracion_qr_colores ORDER BY orden;
+
+
+
+-- Actualizar la página con el ID de la campaña activa
+UPDATE paginas_dinamicas
+SET idcampania = 16
+WHERE slug = 'buscatuqr';

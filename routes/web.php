@@ -106,5 +106,7 @@ Route::prefix('rest')->name('rest.')->group(function () {
     Route::get('buttonmessage/select', 'ButtonMessageController@select');
     Route::resource('buttonmessage', 'ButtonMessageController');
 
+    Route::resource('configuracionqrcolor', 'ConfiguracionQrColorController')->except(['create']);
+
     Route::get('buscatuqr/search', [BuscatuqrController::class, 'search']);
 });

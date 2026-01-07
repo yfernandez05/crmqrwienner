@@ -2,6 +2,8 @@
 
 namespace App\Util;
 
+use App\Models\ConfiguracionQrColor;
+
 class RuleManager
 {
 
@@ -19,17 +21,6 @@ class RuleManager
     const PERSONAL_ATTENDANCE_ACCESS = 6;
     const PERSONAL_STAND_ACCESS = 7;
 
-    const YEAR_CONFIG_QR = [
-        2026 => ['color' => 'orange', 'description' => 'Cuarto año de secundaria', 'border' => '2px solid orange'],
-        2025 => ['color' => 'blue', 'description' => 'Quinto año de secundaria', 'border' => '2px solid blue'],
-        'default' => [
-            'color' => 'white',
-            'description' => 'Egresado',
-            'border' => '2px solid gray',
-            'textColor' => 'black'
-        ],
-    ];
-
     public static function getStateName($state = self::DISABLED_STATE)
     {
         return $state == self::ACTIVE_STATE ? self::ACTIVE_STATE_NAME : self::DISABLED_STATE_NAME;
@@ -40,16 +31,11 @@ class RuleManager
         return $state == self::ACTIVE_STATE ? true : false;
     }
 
-    public static function getQRConfigColor(int $anioEgreso, int $isBeca18): array {
-        $config = self::YEAR_CONFIG_QR[$anioEgreso] ?? self::YEAR_CONFIG_QR['default'];
-
-        if ($anioEgreso <= 2024 && $isBeca18 == 1) {
-            $config['color'] = '#00bfff';
-            $config['description'] .= ' / Beca 18';
-            $config['border'] = '2px solid #00bfff';
-            $config['textColor'] = 'black';
-        }
-
-        return $config;
+    /**
+     * Obtener configuración de color desde la base de datos
+     */
+    public static function getQRConfigColor(int $anioEgreso, int $isBeca18): array
+    {
+        return ConfiguracionQrColor::obtenerConfiguracion($anioEgreso, $isBeca18);
     }
 }

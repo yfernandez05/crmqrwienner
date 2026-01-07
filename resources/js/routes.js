@@ -9,12 +9,12 @@ window.intranetBaseUrl = '/crm';
 export default new VueRouter({
     mode: 'history',
     routes:[
-        { 
+        {
             path: intranetBaseUrl,
             name: 'spa',
             component: require('./components/empresa/EmpresaIndex').default
         },
-        { 
+        {
             path: `${intranetBaseUrl}/dashboard`,
             name: 'spa.dashboard',
             component: require('./components/dashboard/DashboardIndex').default
@@ -52,7 +52,7 @@ export default new VueRouter({
         {
             path: `${intranetBaseUrl}/evento`,
             name: 'spa.evento',
-            component: require('./components/evento/Eventoindex').default 
+            component: require('./components/evento/Eventoindex').default
         },
         {
             path: `${intranetBaseUrl}/evento/registrar`,
@@ -64,7 +64,7 @@ export default new VueRouter({
             name: 'spa.evento.editar',
             component: require('./components/evento/EventoEdit').default
         },
-        
+
 
         {
             path: `${intranetBaseUrl}/cliente`,
@@ -128,7 +128,7 @@ export default new VueRouter({
             name: 'spa.atencion.atender',
             component: require('./components/atencion/AtencionCreate').default
         },
-        
+
 
         {
             path: `${intranetBaseUrl}/export`,
@@ -185,6 +185,22 @@ export default new VueRouter({
             path: `${intranetBaseUrl}/buttonmessage/editar/:id`,
             name: 'spa.buttonmessage.editar',
             component: require('./components/buttonmessage/ButtonMessageEdit').default
+        },
+
+        {
+            path: `${intranetBaseUrl}/configuracionqrcolor`,
+            name: 'spa.configuracionqrcolor',
+            component: require('./components/configuracionqrcolor/ConfiguracionQrColorIndex').default
+        },
+        {
+            path: `${intranetBaseUrl}/configuracionqrcolor/registrar`,
+            name: 'spa.configuracionqrcolor.registrar',
+            component: require('./components/configuracionqrcolor/ConfiguracionQrColorCreate').default
+        },
+        {
+            path: `${intranetBaseUrl}/configuracionqrcolor/editar/:id`,
+            name: 'spa.configuracionqrcolor.editar',
+            component: require('./components/configuracionqrcolor/ConfiguracionQrColorEdit').default
         },
 
         { path: '*', redirect: intranetBaseUrl },

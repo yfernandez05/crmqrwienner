@@ -328,8 +328,33 @@ export default {
                 let infodatahtml = '';
                 if (result.dataaditional && result.dataaditional.config) {
                     const config = result.dataaditional.config;
-                    const textColor = config.color === 'white' ? 'black' : 'white';
-                    const borderColor = config.color === 'white' ? 'gray' : config.color;
+
+                    // Calcular color del texto basado en luminosidad del fondo
+                    let textColor = '#000';
+                    if (config.color && config.color.startsWith('#')) {
+                        const color = config.color.replace('#', '');
+                        if (color.length === 3 || color.length === 6) {
+                            let r, g, b;
+                            if (color.length === 3) {
+                                r = parseInt(color.charAt(0) + color.charAt(0), 16);
+                                g = parseInt(color.charAt(1) + color.charAt(1), 16);
+                                b = parseInt(color.charAt(2) + color.charAt(2), 16);
+                            } else {
+                                r = parseInt(color.substring(0, 2), 16);
+                                g = parseInt(color.substring(2, 4), 16);
+                                b = parseInt(color.substring(4, 6), 16);
+                            }
+                            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+                            textColor = luminance > 0.5 ? '#000' : '#fff';
+                        }
+                    } else if (config.color === 'white') {
+                        textColor = '#000';
+                    } else {
+                        textColor = '#fff';
+                    }
+
+                    const borderColor = config.color === 'white' ? '#ddd' : config.color;
+
                     infodatahtml = `<h4 class="name-qr-response anio-qr-response" style="
                                         text-transform: uppercase;
                                         background-color: ${config.color};
