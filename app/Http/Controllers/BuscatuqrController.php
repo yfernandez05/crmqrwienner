@@ -84,9 +84,11 @@ class BuscatuqrController extends Controller
 
             // Preparar datos para el QR
             $datos = [
-                'idcliente' => $cliente->idcliente,
+                //'idcliente' => $cliente->idcliente,
                 'nombre'    => $cliente->nombres,
                 'correo'    => $cliente->email,
+                "idcampania" => $cliente->idcampania,
+
             ];
 
             // Generar QR (sin enviar correo)

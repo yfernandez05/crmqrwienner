@@ -37,6 +37,10 @@
                                             <i class="fas fa-eye-slash"></i>
                                             <span class="hide-menu off-text-btn">APAGAR</span>
                                         </button>
+                                        <button v-if="cameras.length > 1" @click="switchCamera"
+                                                class="btn badge-pill display-2 px-4 shadow-sm btn-flash">
+                                                <i class="fa-solid fa-camera-rotate me-1"></i> Girar
+                                        </button>
                                         <button @click="toggleFlash" class="btn badge-pill display-2 px-4 shadow-sm btn-flash" :class="flashOn ? 'btn-warning' : 'btn-secondary'">
                                             <i class="fas fa-lightbulb"></i>
                                             <span class="hide-menu flash-text-btn">{{ flashOn ? 'ON' : 'OFF' }}</span>
@@ -162,12 +166,14 @@
 </template>
 
 <script>
+
 import MainContent from './../../utils/MainContent';
 import PaginationLinks from './../../utils/PaginationLinks';
 import RowActions from './../../utils/RowActions';
 import QrScanner from 'qr-scanner';
 import vSelect from 'vue-select';
 import debounce from 'lodash/debounce';
+import Swal from 'sweetalert2';
 
 export default {
     data() {
@@ -184,6 +190,9 @@ export default {
             selectedClient: null,
             clientes: [],
             loading: false,
+
+            cameras: [],
+            currentCameraIndex: 0,
         };
     },
     methods: {
@@ -199,11 +208,37 @@ export default {
         setupScanner(){
 
             const videoElement = this.$refs.videoElement;
-
             this.isProcessing = false;
 
-            this.scanner = new QrScanner(videoElement, result => {
+            QrScanner.listCameras(true).then(cameras => {
+
+                console.log('cámaras disponibles:', cameras);
+                //alert("Cámaras disponibles:\n" + JSON.stringify(cameras, null, 2));
+
+                // Filtrar solo los que parecen cámaras reales
+                this.cameras = cameras;
+
+                if (this.cameras.length === 0) {
+                    console.warn("No se detectaron cámaras válidas.");
+                    return;
+                }
+
+                // Buscar primero cámara frontal
+                let preferredCamera = this.cameras.find(cam => {
+                    const label = (cam.label || "").toLowerCase();
+                    return label.includes("front") || label.includes("facing front") || label.includes("user");
+                });
+
+                // Si no hay frontal, usar la trasera (primera disponible)
+                if (!preferredCamera) {
+                    preferredCamera = this.cameras[0];
+                }
+
+                this.currentCameraIndex = this.cameras.indexOf(preferredCamera);
+
+                this.scanner = new QrScanner(videoElement, result => {
                 console.log('Código QR escaneado:', result);
+
 
                 if (this.isProcessing) {
                     console.log('Lectura bloqueada. Procesando petición anterior.');
@@ -219,13 +254,31 @@ export default {
                     playSoundScanner();
                 }
             },{
+                preferredCamera: preferredCamera.id,
                 highlightScanRegion: true,
                 highlightCodeOutline: true
             });
 
-            this.scanner.start();
-            this.cameraOn = true;
-            console.log('SCANER START 1');
+             this.scanner.start(preferredCamera.id).then(() => {
+                    this.cameraOn = true;
+                    console.log('Scanner iniciado con:', preferredCamera.label);
+                });
+                 }).catch(err => {
+                console.error('Error listando cámaras:', err);
+            });
+        },
+
+        switchCamera() {
+            if (this.cameras.length <= 1) return; // seguridad
+
+            this.currentCameraIndex = (this.currentCameraIndex + 1) % this.cameras.length;
+            const nextCamera = this.cameras[this.currentCameraIndex];
+
+            this.scanner.setCamera(nextCamera.id).then(() => {
+                console.log("Cambiado a cámara:", nextCamera.label);
+            }).catch(err => {
+                console.error("Error al cambiar cámara:", err);
+            });
         },
 
         startScanner() {
@@ -240,6 +293,15 @@ export default {
         stopScanner() {
             if (this.scanner) {
                 this.scanner.stop();
+                // Liberar el Stream
+                const videoEl = this.$refs.videoElement;
+                const stream = videoEl?.srcObject;
+                if (stream) {
+                    const tracks = stream.getTracks();
+                    tracks.forEach(track => track.stop()); // apaga cámara/micrófono
+                    videoEl.srcObject = null;
+                }
+
                 this.cameraOn = false;
                 this.flashOn = false;
             }
@@ -315,21 +377,17 @@ export default {
                 let mensajeExitoso = '';
                 if(result.message && result.message.trim() !== '') messageResult = result.message;
 
-                console.log(result);
-
                 if(result.dataaditional && result.dataaditional.ismatricula == 1){
-                    matriculaText = `<h5 class="text-dark mt-2 name-qr-response">Matriculado</h5>`;
+                    matriculaText = `<h5 class=\"text-dark mt-2 name-qr-response\">Matriculado</h5>`;
                 }
 
                 if(result.dataaditional && result.dataaditional.mensaje_exito){
-                    mensajeExitoso = `<div class="cont-alert-main">${result.dataaditional.mensaje_exito}</div>`;
+                    mensajeExitoso = `<div class=\"cont-alert-main\">${result.dataaditional.mensaje_exito}</div>`;
                 }
 
                 let infodatahtml = '';
                 if (result.dataaditional && result.dataaditional.config) {
                     const config = result.dataaditional.config;
-
-                    // Calcular color del texto basado en luminosidad del fondo
                     let textColor = '#000';
                     if (config.color && config.color.startsWith('#')) {
                         const color = config.color.replace('#', '');
@@ -352,37 +410,82 @@ export default {
                     } else {
                         textColor = '#fff';
                     }
-
                     const borderColor = config.color === 'white' ? '#ddd' : config.color;
-
-                    infodatahtml = `<h4 class="name-qr-response anio-qr-response" style="
+                    infodatahtml = `<h4 class=\"name-qr-response anio-qr-response\" style=\"
                                         text-transform: uppercase;
                                         background-color: ${config.color};
                                         padding: 10px;
                                         margin-top: 1em;
                                         color: ${textColor};
                                         border: 2px solid ${borderColor};
-                                        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);">
+                                        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);\">
                                         ${config.description}
                                     </h4>`;
                 }
 
                 if (result.status) {
-                    swalAlertSuccessQR(`
-                    ${mensajeExitoso}
-                    Asistente: <br>
-                    <h3 class="name-qr-response mt-1 mb-0 text-primary">${result.dataaditional.nombre}</h3>
-                    <p class="email-qr-response mb-1">${result.dataaditional.correo}</p>
-                    ${matriculaText}
-                    ${infodatahtml}`, messageResult)
-                    .then(function(optionSelected){
-                        if(optionSelected.value){
+                    // Solo mostrar el checkbox de autorización si NO es lectura de stand
+                    let autorizacionHtml = '';
+                    if (!result.dataaditional?.isStand) {
+                        autorizacionHtml = `
+                            <div class=\"mt-3\">
+                                <div class=\"form-check d-flex justify-content-center\">
+                                    <input class=\"form-check-input\" type=\"checkbox\" name=\"autorizo_uso_imagen\" id=\"autorizo_si\" value=\"1\" checked>
+                                    <label class=\"form-check-label ml-2\" for=\"autorizo_si\" style=\"font-size: 0.95em; margin-left: 0.5em;\">
+                                        Al ingresar autorizo el uso de mi imagen y/o mi hijo para fines promocionales de la UNW.
+                                    </label>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    const swalOptions = {
+                        title: messageResult,
+                        html: `
+                            ${mensajeExitoso}
+                            Asistente: <br>
+                            <h3 class=\"name-qr-response mt-1 mb-0 text-primary\">${result.dataaditional.nombre}</h3>
+                            <p class=\"email-qr-response mb-1\">${result.dataaditional.correo}</p>
+                            ${matriculaText}
+                            ${infodatahtml}
+                            ${autorizacionHtml}
+                        `,
+                        showCancelButton: false,
+                        confirmButtonText: result.dataaditional?.isStand ? 'Cerrar' : 'Guardar respuesta',
+                        allowOutsideClick: false
+                    };
+                    if (!result.dataaditional?.isStand) {
+                        swalOptions.preConfirm = () => {
+                            let valor = '1';
+                            const check = document.getElementById('autorizo_si');
+                            if (check) {
+                                valor = check.checked ? '1' : '0';
+                            }
+                            if (!result.dataaditional.idcliente) {
+                                alert('Error: idcliente vacío. No se puede guardar la respuesta.');
+                                return Promise.reject('idcliente vacío');
+                            }
+                            return axios.post(`${appApiUrl}/cliente/update-autorizacion-imagen`, {
+                                idcliente: result.dataaditional.idcliente,
+                                autorizo_uso_imagen: valor
+                            })
+                            .then(function (resp) {
+                                vm.startScanner();
+                                successMessage('Respuesta guardada', appName);
+                            })
+                            .catch(function () {
+                                errorMessage('No se pudo guardar la respuesta', appName);
+                            });
+                        };
+                    } else {
+                        swalOptions.preConfirm = () => {
                             vm.startScanner();
-                        }
-                    });
+                            return Promise.resolve();
+                        };
+                    }
+                    Swal.fire(swalOptions);
                     vm.users = result.dataaditional;
                 }  else if (result.warning){
-                    swalAlertWarningQR(`<div class="cont-alert-main">${result.message}</div>`, appName)
+                    swalAlertWarningQR(`<div class=\"cont-alert-main\">${result.message}</div>`, appName)
                     .then(function(optionSelected){
                         if(optionSelected.value){
                             vm.startScanner();
@@ -402,14 +505,6 @@ export default {
                 vm.isProcessing = false;
             });
         },
-
-        onSearch: debounce(function (search) {
-            if (search.length < 3) {
-                return;
-            }
-            this.loading = true;
-            this.fetchClients(search);
-        }, 500),
 
         fetchClients(search) {
             axios.get(`${appApiUrl}/cliente/selectsearch`, { params: { search } })

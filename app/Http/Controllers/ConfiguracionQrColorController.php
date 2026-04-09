@@ -155,8 +155,7 @@ class ConfiguracionQrColorController extends BaseController
      */
     private function setModel(ConfiguracionQrColor $configuracion, Request $request): ConfiguracionQrColor
     {
-        $configuracion->anio_egreso = $request->anio_egreso;
-        $configuracion->es_beca18 = $request->es_beca18;
+        $configuracion->grado = $request->grado;
         $configuracion->color = $request->color;
         $configuracion->descripcion = $request->descripcion;
         $configuracion->orden = $request->orden;

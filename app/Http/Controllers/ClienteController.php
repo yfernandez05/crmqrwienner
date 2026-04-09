@@ -17,6 +17,7 @@ use App\Exports\plantillaExportMatricula;
 use App\Mail\MessageReceived;
 use App\Models\Campania;
 use App\Models\EventoCliente;
+use App\Models\PaginaDinamica;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Database\QueryException;
@@ -33,7 +34,28 @@ class ClienteController extends BaseController
 {
     public function __construct()
     {
-        parent::__construct(['index']);
+        parent::__construct(['index', 'showViewRegisterCliente', 'saveClientQr']);
+    }
+
+    /**
+     * Muestra la vista de registro de cliente con página dinámica
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showViewRegisterCliente()
+    {
+        $pagina = PaginaDinamica::select('titulo', 'slug', 'descripcion', 'idcampania', 'api_token')
+            ->where([
+                ['slug', 'registro'],
+                ['estado_general', 'A']
+            ])
+            ->first();
+
+        if (!$pagina) {
+            abort(404, 'Página no encontrada o inactiva.');
+        }
+
+        return view('registercliente', compact('pagina'));
     }
 
     /**
@@ -312,6 +334,7 @@ class ClienteController extends BaseController
         $cliente->tipodocumento = $request->tipodocumento;
         $cliente->dni = $request->dni;
         $cliente->anioegreso = $request->anioegreso;
+        $cliente->autorizo_uso_imagen = $request->has('autorizo_uso_imagen') ? (int)$request->autorizo_uso_imagen : 0;
 
         return $cliente;
     }
@@ -355,7 +378,7 @@ class ClienteController extends BaseController
         try {
             $name = 'plantillaMatricula[' . Carbon::now('America/Lima')->format('d-m-Y H:i:s') . ' ].xlsx';
             return Excel::download(new plantillaExportMatricula($request), $name);
-            
+
         } catch (QueryException $e) {
             LogErrorManager::saveInDB($this, __FUNCTION__, $e);
 
@@ -394,7 +417,7 @@ class ClienteController extends BaseController
 
             $cliente = new Cliente();
             $cliente = $this->setModel($cliente, $request);
-            $cliente->userinsert = $this->user->email;
+            $cliente->userinsert = $this->user ? $this->user->email : 'registro_publico';
             $cliente->save();
 
             $this->enviarCorreoConQR($cliente, false);
@@ -406,14 +429,18 @@ class ClienteController extends BaseController
         } catch (QueryException $e) {
             LogErrorManager::saveInDB($this, __FUNCTION__, $e);
             DB::rollback();
-            dd($e);
+
             $duplicateEntry = 1062; // registro duplicado
+
+            // Log temporal para debug
+            \Log::error('QueryException en saveClientQr: ' . $e->getMessage());
+            \Log::error('Error Info: ' . json_encode($e->errorInfo));
 
             if (count($e->errorInfo)) {
                 if ($e->errorInfo[1] == $duplicateEntry) {
                     $result = ResultManager::warningMessage('La dirección de correo electrónico que ha ingresado ya está registrada.');
                 } else {
-                    $result = ResultManager::errorMessage('Ocurrió un error inesperado. Intente nuevamente más tarde');
+                    $result = ResultManager::errorMessage('Error en base de datos: ' . $e->getMessage());
                 }
 
             } else {
@@ -423,8 +450,12 @@ class ClienteController extends BaseController
         } catch (Exception $e) {
             LogErrorManager::saveInDB($this, __FUNCTION__, $e);
             DB::rollback();
-            dd($e);
-            $result = ResultManager::errorMessage('Ocurrió un error inesperado. Intente nuevamente más tarde');
+
+            // Log temporal para debug
+            \Log::error('Exception en saveClientQr: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+
+            $result = ResultManager::errorMessage('Error general: ' . $e->getMessage());
         }
         return $result;
     }
@@ -660,6 +691,21 @@ class ClienteController extends BaseController
         return $query;
     }
 
+public function updateAutorizacionImagen(Request $request)
+{
+    $cliente = Cliente::find($request->idcliente);
+    if ($cliente) {
+        $cliente->autorizo_uso_imagen = ($request->autorizo_uso_imagen == '1' || $request->autorizo_uso_imagen === 1) ? 1 : 0;
+        try {
+            $cliente->save();
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al guardar']);
+        }
+        $fresh = Cliente::find($cliente->idcliente);
+        return response()->json(['guardado' => $fresh->autorizo_uso_imagen]);
+    }
+    return ResultManager::errorMessage('Cliente no encontrado.');
+}
 
 
 

@@ -6,24 +6,16 @@
 
         <template v-slot:card-body-main>
             <div class="form-row">
-                <div class="form-group col-12 col-sm-6 col-md-4" :class="{'has-danger':errorExists('anio_egreso')}">
-                    <label>Año de Egreso</label>
-                    <input type="text" class="form-control" v-model="configuracion.anio_egreso"
-                           @keyup.enter="doSaveData" placeholder="Ej: 2026 (vacío = por defecto)" maxlength="10" />
-                    <small class="form-control-feedback" v-if="errorExists('anio_egreso')"
-                           v-text="showError('anio_egreso').errorDetail"></small>
-                    <small class="form-text text-muted">Dejar vacío para configuración por defecto</small>
-                </div>
+                <div class="form-group col-12 col-sm-6 col-md-4" :class="{'has-danger':errorExists('grado')}">
+                <label>Grado</label>
+                <input type="text" class="form-control" v-model="configuracion.grado"
+                    @keyup.enter="doSaveData" placeholder="Ej: 5to, 4to, Ya terminé colegio, etc." maxlength="50" />
+                <small class="form-control-feedback" v-if="errorExists('grado')"
+                    v-text="showError('grado').errorDetail"></small>
+                <small class="form-text text-muted">Dejar vacío para configuración por defecto</small>
+            </div>
 
-                <div class="form-group col-12 col-sm-6 col-md-4" :class="{'has-danger':errorExists('es_beca18')}">
-                    <label>¿Es Beca18? <small class="text-danger">(*)</small></label>
-                    <select class="form-control" v-model="configuracion.es_beca18" @change="doSaveData">
-                        <option :value="0">No</option>
-                        <option :value="1">Sí</option>
-                    </select>
-                    <small class="form-control-feedback" v-if="errorExists('es_beca18')"
-                           v-text="showError('es_beca18').errorDetail"></small>
-                </div>
+                <!-- Eliminado campo ¿Es Beca18? -->
 
                 <div class="form-group col-12 col-sm-6 col-md-4" :class="{'has-danger':errorExists('orden')}">
                     <label>Orden de Prioridad <small class="text-danger">(*)</small></label>
@@ -139,8 +131,7 @@
                 type: Object,
                 default() {
                     return {
-                        anio_egreso: null,
-                        es_beca18: 0,
+                        grado: null,
                         color: '#000000',
                         descripcion: '',
                         orden: 999,
@@ -188,8 +179,7 @@
 
                 // Limpiar anio_egreso si está vacío
                 let configData = {
-                    anio_egreso: this.configuracion.anio_egreso || null,
-                    es_beca18: this.configuracion.es_beca18,
+                    grado: this.configuracion.grado || null,
                     color: this.configuracion.color,
                     descripcion: this.configuracion.descripcion,
                     orden: this.configuracion.orden,

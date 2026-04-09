@@ -14,6 +14,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BuscatuqrController;
+use App\Http\Controllers\ClienteController;
 
 Route::get('/', 'Auth\LoginController@showLoginForm');
 Auth::routes(['register' => false]);
@@ -29,6 +30,7 @@ Route::get('crm/{path?}', "SpaController@index")->where('path', '([A-z0-9-\/_.]+
 
 // Ruta pública (sin autenticación)
 Route::get('/buscatuqr', [BuscatuqrController::class, 'index'])->name('buscatuqr.index');
+Route::get('registro', [ClienteController::class,'showViewRegisterCliente'])->name('cliente.registro');
 
 //Routes for consume data
 Route::prefix('rest')->name('rest.')->group(function () {
@@ -67,6 +69,7 @@ Route::prefix('rest')->name('rest.')->group(function () {
     Route::get('cliente/exportarexcel', 'ClienteController@exportarExcel')->name('cuenta.exportarexcel');
     Route::post('cliente/importarexcel', 'ClienteController@importarExcel')->name('cuenta.importarexcel');
     Route::post('cliente/physicallyremove', 'ClienteController@physicallyRemove')->name('cliente.physicallyremove');
+    Route::post('cliente/saveClientQr', 'ClienteController@saveClientQr')->name('cliente.saveClientQr');
     Route::resource('cliente', 'ClienteController')->except(['show', 'create']);
 
     Route::resource('clienteevento', 'EventoClienteController');
@@ -109,4 +112,5 @@ Route::prefix('rest')->name('rest.')->group(function () {
     Route::resource('configuracionqrcolor', 'ConfiguracionQrColorController')->except(['create']);
 
     Route::get('buscatuqr/search', [BuscatuqrController::class, 'search']);
+    Route::post('/cliente/update-autorizacion-imagen', [ClienteController::class, 'updateAutorizacionImagen']);
 });

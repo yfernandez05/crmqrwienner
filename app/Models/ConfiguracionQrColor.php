@@ -12,8 +12,7 @@ class ConfiguracionQrColor extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'anio_egreso',
-        'es_beca18',
+        'grado',
         'color',
         'descripcion',
         'orden',
@@ -25,53 +24,27 @@ class ConfiguracionQrColor extends Model
     ];
 
     protected $casts = [
-        'es_beca18' => 'integer',
         'orden' => 'integer'
     ];
 
     /**
      * Obtener la configuración de color según año de egreso y beca18
      */
-    public static function obtenerConfiguracion($anioEgreso, $isBeca18)
+    public static function obtenerConfiguracion($grado)
     {
-        // Buscar coincidencia exacta primero (año + beca18)
+        // Buscar coincidencia exacta por grado
         $config = self::where('estado', 'A')
-            ->where('anio_egreso', $anioEgreso)
-            ->where('es_beca18', $isBeca18)
+            ->where('grado', $grado)
             ->orderBy('orden')
             ->first();
 
         if ($config) {
             return self::formatearConfiguracion($config);
-        }
-
-        // Buscar por año sin importar beca18
-        $config = self::where('estado', 'A')
-            ->where('anio_egreso', $anioEgreso)
-            ->orderBy('orden')
-            ->first();
-
-        if ($config) {
-            return self::formatearConfiguracion($config);
-        }
-
-        // Si es Beca18, buscar configuración de egresados Beca18
-        if ($isBeca18 == 1 && $anioEgreso <= 2024) {
-            $config = self::where('estado', 'A')
-                ->whereNull('anio_egreso')
-                ->where('es_beca18', 1)
-                ->orderBy('orden')
-                ->first();
-
-            if ($config) {
-                return self::formatearConfiguracion($config);
-            }
         }
 
         // Configuración por defecto (egresados generales)
         $config = self::where('estado', 'A')
-            ->whereNull('anio_egreso')
-            ->where('es_beca18', 0)
+            ->whereNull('grado')
             ->orderBy('orden')
             ->first();
 

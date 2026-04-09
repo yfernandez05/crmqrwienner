@@ -15,6 +15,7 @@ class PaginaDinamica extends Model
         'titulo',
         'descripcion',
         'idcampania',
+        'api_token',
         'estado_general',
         'estado'
     ];
@@ -39,5 +40,10 @@ class PaginaDinamica extends Model
     public function getStatenameAttribute()
     {
         return $this->estado === 'A' ? 'Activo' : 'Inactivo';
+    }
+
+    public function campania()
+    {
+        return $this->belongsTo(Campania::class, 'idcampania', 'idcampania');
     }
 }

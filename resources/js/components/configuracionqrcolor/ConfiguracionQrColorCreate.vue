@@ -13,8 +13,7 @@ export default {
     data() {
         return {
             configuracion: {
-                anio_egreso: null,
-                es_beca18: 0,
+                grado: null,
                 color: '#000000',
                 descripcion: '',
                 orden: 999,

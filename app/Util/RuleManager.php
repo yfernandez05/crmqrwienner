@@ -34,8 +34,8 @@ class RuleManager
     /**
      * Obtener configuración de color desde la base de datos
      */
-    public static function getQRConfigColor(int $anioEgreso, int $isBeca18): array
+    public static function getQRConfigColor(string $grado): array
     {
-        return ConfiguracionQrColor::obtenerConfiguracion($anioEgreso, $isBeca18);
+        return ConfiguracionQrColor::obtenerConfiguracion($grado);
     }
 }

@@ -581,3 +581,15 @@ VALUES
 
 -- Verificar inserción
 SELECT * FROM paginas_dinamicas WHERE slug = 'buscatuqr';
+
+ALTER TABLE `paginas_dinamicas`
+ADD COLUMN `api_token` VARCHAR(100) NULL;
+
+-- Insertar registro para página de registro
+INSERT INTO `paginas_dinamicas`
+(`slug`, `titulo`, `descripcion`, `idcampania`, `api_token`, `estado_general`, `estado`, `userinsert`, `dateinsert`)
+VALUES
+('registro', 'Registro de Participantes', 'Formulario de registro público para eventos.', 16, 'wiener_registro_2026_secret_token', 'A', 'A', 'sistema', NOW());
+
+-- ALTER TABLE clientes ADD COLUMN prefijo VARCHAR(50) NULL;
+-- ALTER TABLE evento_cliente ADD COLUMN prefijo VARCHAR(50) NULL;

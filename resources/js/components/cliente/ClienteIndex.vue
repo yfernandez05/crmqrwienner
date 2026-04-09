@@ -169,6 +169,7 @@
                             <th class="p-2">Carrera</th>
                             <th v-if="authenticatedUser.idrol < 6" class="p-2">Campaña</th>
                             <th class="p-2">Asistencia </th>
+                            <th class="p-2">Autorizo</th>
                             <th class="p-2">F.Asistencia </th>
                             <th class="p-2" v-if="authenticatedUser.idrol == 1">Empresa</th>
                             <!-- <th class="p-2">Sede</th> -->
@@ -227,6 +228,11 @@
                                 <span class="badge badge-pill py-1 px-3"
                                     :class="cli.isassistance ? 'badge-info':'badge-secondary'" v-text="cli.asistencianame">
                                 </span>
+                            </td>
+                            <td>
+                                <span v-if="cli.autorizo_uso_imagen == 1" class="badge badge-success">Sí</span>
+                                <span v-else-if="cli.autorizo_uso_imagen == 0" class="badge badge-danger">No</span>
+                                <span v-else class="badge badge-secondary">-</span>
                             </td>
                             <td v-text="cli.fechapresencia" class="ui-max-w-200 text-truncate"></td>
                             <td v-if="authenticatedUser.idrol == 1" v-text="cli.campania.cuenta.empresa" class="ui-max-w-300 text-truncate"></td>

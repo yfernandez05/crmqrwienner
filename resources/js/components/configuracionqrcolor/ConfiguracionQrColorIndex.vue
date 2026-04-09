@@ -26,18 +26,11 @@
         <template v-slot:card-body-main>
             <div class="form-row">
                 <div class="form-group col-12 col-sm-6 col-md-4">
-                    <label>Año de Egreso</label>
-                    <input type="text" class="form-control" v-model="filtros.anio_egreso"
+                    <label>Grado</label>
+                    <input type="text" class="form-control" v-model="filtros.grado"
                            @keyup.enter="buscarConfiguracion()" placeholder="Ej: 2026">
                 </div>
-                <div class="form-group col-12 col-sm-6 col-md-4">
-                    <label>¿Es Beca18?</label>
-                    <select class="form-control" v-model="filtros.es_beca18" @change="buscarConfiguracion()">
-                        <option value="">Todos</option>
-                        <option :value="0">No</option>
-                        <option :value="1">Sí</option>
-                    </select>
-                </div>
+                <!-- Eliminado filtro ¿Es Beca18? -->
                 <div class="form-group col-12 col-sm-6 col-md-4">
                     <label>&nbsp;</label>
                     <div class="custom-control custom-checkbox">
@@ -55,8 +48,8 @@
                             <th class="p-2">Acciones</th>
                             <th class="p-2">Cod</th>
                             <th class="p-2">Orden</th>
-                            <th class="p-2 text-nowrap">Año Egreso</th>
-                            <th class="p-2">Beca18</th>
+                            <th class="p-2 text-nowrap">Grado</th>
+                            <!-- Eliminada columna Beca18 -->
                             <th class="p-2">Color</th>
                             <th class="p-2">Descripción</th>
                             <th class="p-2">Estado</th>
@@ -73,11 +66,8 @@
                             </td>
                             <td v-text="config.idconfig"></td>
                             <td v-text="config.orden"></td>
-                            <td v-text="config.anio_egreso || 'Por defecto'"></td>
-                            <td>
-                                <span v-if="config.es_beca18 === 1" class="badge badge-success">SÍ</span>
-                                <span v-else class="badge badge-secondary">NO</span>
-                            </td>
+                            <td v-text="config.grado || 'Por defecto'"></td>
+                            <!-- Eliminada celda Beca18 -->
                             <td>
                                 <div :style="`background-color: ${config.color}; color: ${getTextColor(config.color)}; padding: 8px 15px; border-radius: 4px; border: 1px solid #ddd; font-weight: 500; display: inline-block;`">
                                     {{ config.color }}
@@ -110,8 +100,7 @@
             return {
                 configuraciones: [],
                 filtros: {
-                    anio_egreso: '',
-                    es_beca18: '',
+                    grado: '',
                     incluirInactivos: false
                 },
                 pagination: {
@@ -135,12 +124,10 @@
                     perpage: this.pagination.per_page
                 };
 
-                if (this.filtros.anio_egreso) {
-                    params.anio_egreso = this.filtros.anio_egreso;
+                if (this.filtros.grado) {
+                    params.grado = this.filtros.grado;
                 }
-                if (this.filtros.es_beca18 !== '') {
-                    params.es_beca18 = this.filtros.es_beca18;
-                }
+                // Eliminada lógica de filtro es_beca18
                 if (!this.filtros.incluirInactivos) {
                     params.estado = 'A';
                 }
@@ -164,8 +151,7 @@
             },
             limpiarFiltros() {
                 this.filtros = {
-                    anio_egreso: '',
-                    es_beca18: '',
+                    grado: '',
                     incluirInactivos: false
                 };
                 this.buscarConfiguracion();

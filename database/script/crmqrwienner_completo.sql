@@ -861,3 +861,26 @@ SELECT * FROM configuracion_qr_colores ORDER BY orden;
 UPDATE paginas_dinamicas
 SET idcampania = 16
 WHERE slug = 'buscatuqr';
+
+ALTER TABLE `paginas_dinamicas`
+ADD COLUMN `api_token` VARCHAR(100) NULL;
+
+-- Insertar registro para página de registro
+INSERT INTO `paginas_dinamicas`
+(`slug`, `titulo`, `descripcion`, `idcampania`, `api_token`, `estado_general`, `estado`, `userinsert`, `dateinsert`)
+VALUES
+('registro', 'Registro de Participantes', 'Formulario de registro público para eventos.', 16, 'wiener_registro_2026_secret_token', 'A', 'A', 'sistema', NOW());
+
+-- Renombrar la columna anio_egreso a grado en la tabla configuracion_qr_colores
+ALTER TABLE configuracion_qr_colores CHANGE anio_egreso grado VARCHAR(50) NULL COMMENT 'Grado, NULL para default';
+
+-- Eliminar las columnas relacionadas con isbeca18
+ALTER TABLE clientes DROP COLUMN isbeca18;
+ALTER TABLE evento_cliente DROP COLUMN isbeca18;
+ALTER TABLE configuracion_qr_colores DROP COLUMN es_beca18;
+
+DROP INDEX idx_grado_beca ON configuracion_qr_colores;
+CREATE INDEX idx_grado_beca ON configuracion_qr_colores (grado);
+
+-- Agregar el campo autorizo_uso_imagen a la tabla clientes
+ALTER TABLE clientes ADD autorizo_uso_imagen TINYINT(1) NOT NULL DEFAULT 0;

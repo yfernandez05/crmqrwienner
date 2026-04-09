@@ -195,28 +195,28 @@ export default {
             if (this.validateFields().length > 0) {
                 return;
             }
-// Detectar si es email o teléfono
+
+            // Detectar si es email o teléfono
             this.filters = {};
             const value = this.searchValue.trim();
-            
+
             // Si contiene @ es un email
             if (value.includes('@')) {
                 this.filters.email = value;
             } else {
                 // Si no, es teléfono
-                this.filters.telefono = valuel.length) {
-                this.filters.email = this.cliente.email;
+                this.filters.telefono = value;
             }
 
             this.listarDatos();
         },
-searchValue || !this.searchValue.trim()) {
+
+        validateFields() {
+            this.errors = [];
+
+            if (!this.searchValue || !this.searchValue.trim()) {
                 this.setError("search", "Este campo es obligatorio");
-                this.error = "Por favor, ingresa tu correo electrónico o teléfon
-            if (!this.cliente.email && !this.cliente.telefono) {
-                this.setError("email", "Ingresa tu correo o teléfono");
-                this.setError("telefono", "Ingresa tu correo o teléfono");
-                this.error = "Por favor, ingresa un correo o teléfono válido.";
+                this.error = "Por favor, ingresa tu correo electrónico o teléfono.";
             }
 
             return this.errors;
@@ -250,6 +250,13 @@ searchValue || !this.searchValue.trim()) {
 
     mounted() {
         console.log('Componente BuscaTuQR montado');
+        // Leer el parámetro email de la URL y buscar automáticamente
+        const params = new URLSearchParams(window.location.search);
+        const email = params.get('email');
+        if (email) {
+            this.searchValue = email;
+            this.buscarClientes();
+        }
     }
 };
 </script>

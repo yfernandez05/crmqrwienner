@@ -44,7 +44,7 @@ class Cliente extends Model
             'uuidmatriculaimportacion',
             'tipodocumento',
             'anioegreso',
-            'isbeca18',
+            'autorizo_uso_imagen',
             'estado',
     ];
 
@@ -56,8 +56,9 @@ class Cliente extends Model
     ];
 
     protected $casts = [
-     'fecharegistro' => 'datetime:Y-m-d H:i:s',
-     'fechaasistencia'=> 'datetime:Y-m-d H:i:s',
+        'fecharegistro' => 'datetime:Y-m-d H:i:s',
+        'fechaasistencia'=> 'datetime:Y-m-d H:i:s',
+        'autorizo_uso_imagen' => 'boolean',
     ];
 
     protected $appends = [
@@ -116,14 +117,7 @@ class Cliente extends Model
         return $matriculaname;
     }
 
-     public function getBeca18nameAttribute()
-    {
-        $beca18name = "No";
-
-        if($this->isbeca18) $beca18name = "Si";
-
-        return $beca18name;
-    }
+    // Método getBeca18nameAttribute eliminado
 
     //para mostrar el nombre y ya no el id en el listado
     public function campania(){
