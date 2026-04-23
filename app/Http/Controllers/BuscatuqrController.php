@@ -121,4 +121,96 @@ class BuscatuqrController extends Controller
             ], 500);
         }
     }
+
+     public function getcliente(Request $request)
+    {
+        try {
+            $email = $request->email;
+            $idcampania = $request->idcampania;
+
+            // Validar que al menos uno esté presente
+            if (!$email) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Debe ingresar un correo.'
+                ], 400);
+            }
+
+
+            // Buscar cliente (búsqueda insensible a mayúsculas/minúsculas)
+            $cliente = Cliente::query()
+            ->select(
+                'idcliente', 'idcampania', 'nombres', 'apellidomaterno',
+                'apellidopaterno', 'email', /* 'telefono', 'carrera',
+                'ismatricula', / 'colegio'/ , 'coddistrito', 'anioegreso', 'fecharegistro' */
+            )
+            ->where('estado', 'A')
+            ->when($idcampania, fn($q) => $q->where('idcampania', $idcampania))
+            ->where(function ($q) use ($email) {
+                if ($email) {
+                    $q->orWhereRaw('LOWER(email) = ?', [strtolower($email)]);
+                }
+            })
+            ->first();
+
+            if (!$cliente) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se encontró resultado con la información ingresada.'
+                ], 404);
+            }
+
+            $cliente->makeHidden([
+                'isactive',
+                'statename',
+                'fecha',
+                'isassistance',
+                'asistencianame',
+                'matriculaname',
+                'fechapresencia'
+            ]);
+
+
+
+            // Preparar datos para el QR
+            $datos = [
+                //'idcliente' => $cliente->idcliente,
+                'nombre'    => $cliente->nombres,
+                'correo'    => $cliente->email,
+                "idcampania" => $cliente->idcampania,
+
+            ];
+
+            // Generar QR (sin enviar correo)
+            $qrContent = $this->qrService->generateQRAndSendmail($datos, false);
+            $qrBase64 = base64_encode($qrContent);
+
+            // Preparar respuesta con datos del cliente
+            $dataresult = [
+                'cliente' => $cliente,
+                'qr' => 'data:image/png;base64,' . $qrBase64,
+            ];
+
+            return response()->json([
+                'success' => true,
+                'message' => 'PARTICIPANTE VÁLIDO',
+                'dataaditional' => $dataresult
+            ]);
+
+        } catch (QueryException $e) {
+            \Log::error('Error QueryException en BuscatuqrController::getcliente - ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al consultar los datos.'
+            ], 500);
+
+        } catch (Exception $e) {
+            \Log::error('Error Exception en BuscatuqrController::getcliente - ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error inesperado. Por favor intente nuevamente.'
+            ], 500);
+
+        }
+    }
 }

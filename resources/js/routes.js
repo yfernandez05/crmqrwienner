@@ -203,6 +203,22 @@ export default new VueRouter({
             component: require('./components/configuracionqrcolor/ConfiguracionQrColorEdit').default
         },
 
+        {
+            path: `${window.intranetBaseUrl}/tipoRecordatorio`,
+            name: 'spa.tipoRecordatorio',
+            component: () => import('./components/tipoRecordatorio/TipoRecordatorioIndex.vue')
+        },
+        {
+            path: `${window.intranetBaseUrl}/tipoRecordatorio/registrar`,
+            name: 'spa.tipoRecordatorio.registrar',
+            component: () => import('./components/tipoRecordatorio/TipoRecordatorioCreate.vue')
+        },
+        {
+            path: `${window.intranetBaseUrl}/tipoRecordatorio/editar/:id`,
+            name: 'spa.tipoRecordatorio.editar',
+            component: () => import('./components/tipoRecordatorio/TipoRecordatorioEdit.vue')
+        },
+
         { path: '*', redirect: intranetBaseUrl },
         { path: '/', redirect: intranetBaseUrl },
     ]

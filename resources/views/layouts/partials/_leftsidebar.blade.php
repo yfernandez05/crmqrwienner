@@ -65,6 +65,7 @@
                         <li><router-link :to="{name: 'spa.tipoAtencion'}">Tipo de atención</router-link></li>
                         <li><router-link :to="{name: 'spa.buttonmessage'}">Botones directos</router-link></li>
                         <li><router-link :to="{name: 'spa.configuracionqrcolor'}">Configuración QR Color</router-link></li>
+                        <li><router-link :to="{name: 'spa.tipoRecordatorio'}">Tipo de Recordatorio</router-link></li>
                     </ul>
                 </li>
                 <li><router-link :to="{name: 'spa.import'}"><i class="fas fa-file-import"></i><span class="hide-menu">Importar Registros</span></li></router-link>

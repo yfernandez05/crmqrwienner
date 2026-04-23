@@ -11,10 +11,10 @@
 |
  */
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BuscatuqrController;
 use App\Http\Controllers\ClienteController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'Auth\LoginController@showLoginForm');
 Auth::routes(['register' => false]);
@@ -113,4 +113,7 @@ Route::prefix('rest')->name('rest.')->group(function () {
 
     Route::get('buscatuqr/search', [BuscatuqrController::class, 'search']);
     Route::post('/cliente/update-autorizacion-imagen', [ClienteController::class, 'updateAutorizacionImagen']);
+
+    Route::get('tipoRecordatorio/select', 'TipoRecordatorioController@select')->name('tipoRecordatorio.select');
+    Route::resource('tipoRecordatorio', 'TipoRecordatorioController')->except(['show', 'create']);
 });

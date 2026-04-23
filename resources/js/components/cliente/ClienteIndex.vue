@@ -159,6 +159,7 @@
                             <th class="p-2">Accion</th>
                             <th class="p-2">id</th>
                             <th class="p-2 text-nowrap">Est. Atencion</th>
+                            <th class="p-2 text-nowrap">Recordatorio WSP</th>
                             <th class="p-2">Nombres</th>
                             <th class="p-2">Ap. Paterno</th>
                             <th class="p-2">Ap. Materno</th>
@@ -167,6 +168,7 @@
                             <th class="p-2">Telefono</th>
                             <th class="p-2 text-nowrap">F. Registro</th>
                             <th class="p-2">Carrera</th>
+                            <th class="p-2">Campus</th>
                             <th v-if="authenticatedUser.idrol < 6" class="p-2">Campaña</th>
                             <th class="p-2">Asistencia </th>
                             <th class="p-2">Autorizo</th>
@@ -215,6 +217,7 @@
                             </td>
                             <td v-text="cli.idcliente"></td>
                             <td><span class="badge badge-pill badge-lg" v-bind:style="{background: cli.ultimaatencion.tipoatencion.backgroundColor, color:cli.ultimaatencion.tipoatencion.textColor}" v-text="cli.ultimaatencion.tipoatencion.tipoatencion"></span></td>
+                            <td><span class="badge badge-pill badge-lg" v-bind:style="{background: cli.tiporecordatorio.backgroundColor, color:cli.tiporecordatorio.textColor}" v-text="cli.tiporecordatorio.tiporecordatorio"></span></td>
                             <td v-text="cli.nombres" class="ui-max-w-300 text-truncate"></td>
                             <td v-text="cli.apellidopaterno" class="ui-max-w-300 text-truncate"></td>
                             <td v-text="cli.apellidomaterno" class="ui-max-w-300 text-truncate"></td>
@@ -223,6 +226,7 @@
                             <td v-text="cli.telefono"></td>
                             <td v-text="cli.fecha" class="ui-max-w-100 text-truncate"></td>
                             <td v-text="cli.carrera" class="ui-max-w-200 text-truncate"></td>
+                            <td v-text="cli.colegio" class="ui-max-w-200 text-truncate"></td>
                             <td v-if="authenticatedUser.idrol < 6" v-text="cli.campania.nombrecampania" class="ui-max-w-200 text-truncate"></td>
                             <td>
                                 <span class="badge badge-pill py-1 px-3"

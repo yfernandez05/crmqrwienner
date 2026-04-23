@@ -17,7 +17,7 @@ class ClientesImport implements ToModel, WithStartRow
     public $errors = [];
 
     public function __construct(Importacion $importacion, $evento){
-        $this->importacion = $importacion; 
+        $this->importacion = $importacion;
         $this->evento = $evento;
     }
 
@@ -28,7 +28,7 @@ class ClientesImport implements ToModel, WithStartRow
     */
     public function model(array $row)
     {
-        
+
         if (!isset($row[0])) {
             return null;
         }
@@ -37,7 +37,7 @@ class ClientesImport implements ToModel, WithStartRow
 
         try {
             // Verificar si la fila tiene un valor en la columna requerida
-            if (empty($row[3])) { 
+            if (empty($row[3])) {
                 throw new Exception('El campo "Correo" está vacío');
             }
 
@@ -48,26 +48,27 @@ class ClientesImport implements ToModel, WithStartRow
 
             // Verificar errores
             if (!empty($this->errors)) {
-                return null; 
+                return null;
             }
 
             return  new Cliente([
-                'nombres' => $row[0], 
-                'apellidopaterno' => $row[1], 
-                'apellidomaterno' => $row[2], 
-                'email' => $row[3], 
-                'telefono' => $row[4], 
-                'carrera' => $row[5],             
-                'tipodocumento' => $row[6], 
-                'dni' => $row[7], 
-                'grado' => $row[8], 
-                'anioegreso' => $row[9], 
-                'procedencia' => $row[10], 
-                'campaign_content' => $row[11], 
-                'campaign_medium' => $row[12], 
-                'campaign_name' => $row[13], 
-                'campaign_source' => $row[14], 
-                'campaign_term' => $row[15], 
+                'nombres' => $row[0],
+                'apellidopaterno' => $row[1],
+                'apellidomaterno' => $row[2],
+                'email' => $row[3],
+                'telefono' => $row[4],
+                'carrera' => $row[5],
+                'tipodocumento' => $row[6],
+                'dni' => $row[7],
+                'grado' => $row[8],
+                'colegio' => $row[9],
+                'anioegreso' => $row[10],
+                'procedencia' => $row[11],
+                'campaign_content' => $row[12],
+                'campaign_medium' => $row[13],
+                'campaign_name' => $row[14],
+                'campaign_source' => $row[15],
+                'campaign_term' => $row[16],
                 'uuidimportacion' => $this->importacion->uuidimportacion,
                 'idcampania' => $this->importacion->idcampania,
             ]);
@@ -83,9 +84,9 @@ class ClientesImport implements ToModel, WithStartRow
 
         /* $eventos = new EventoCliente([
             'idcliente' => $cliente->idcliente,
-            'idevento' => $this->evento,            
+            'idevento' => $this->evento,
         ]); */
-        
+
         //return dd([$cliente->idcliente, $eventos]);
 
         //return dd($this->idevento);

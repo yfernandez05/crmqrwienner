@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:api')->group(function () {
+    Route::get('getcustomer', 'BuscatuqrController@getcliente');
     Route::post('cliente/saveClientQr', 'ClienteController@saveClientQr');
     Route::resource('cliente', 'ClienteController')->except(['show', 'create']);
     Route::resource('campania', 'CampaniaController')->except(['show', 'create']);

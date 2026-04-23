@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Ubigeo;
 use App\Models\Campania;
 use App\Models\Atencion;
+use App\Models\TipoRecordatorio;
 use App\Util\RuleManager;
 use Illuminate\Database\Eloquent\Model;
 
@@ -173,6 +174,17 @@ class Cliente extends Model
             ])
             ->with('tipoatencion')
             ->orderBy('idatencion', 'desc');
+    }
+
+     public function tiporecordatorio()
+    {
+        return $this->belongsTo(TipoRecordatorio::class, 'idtiporecordatorio', 'idtiporecordatorio')
+            ->withDefault([
+                'idtiporecordatorio' => 0,
+                'tiporecordatorio' => 'Sin iniciar flujo',
+                'backgroundColor' => '#d3d3d3',
+                'textColor' => '#000'
+            ]);
     }
 
 

@@ -27,6 +27,7 @@ class plantillaCliente implements WithHeadings, WithStyles, ShouldAutoSize, With
             'Tipo Documento *',
             'Nº de Documento *',
             'Grado',
+            'Campus',
             'Año Egreso',
             'Procedencia',
             'campaign_content',
@@ -47,6 +48,7 @@ class plantillaCliente implements WithHeadings, WithStyles, ShouldAutoSize, With
             'DNI',
             '77777777',
             '5to',
+            'Campus Lima',
             '',
             'Orgánico',
             '',
@@ -72,8 +74,8 @@ class plantillaCliente implements WithHeadings, WithStyles, ShouldAutoSize, With
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                     'color' => ['argb' => 'FF1d428a'],
-                ],                
-            ],                
+                ],
+            ],
         ];
     }
 
@@ -99,7 +101,7 @@ class plantillaCliente implements WithHeadings, WithStyles, ShouldAutoSize, With
                 // Aplicar validación de datos para "Año Egreso"
                 $this->applyDataValidation($sheet, 'K', '"Orgánico,Pauta"', 2, 900);
 
-                
+
             },
         ];
     }
@@ -129,5 +131,5 @@ class plantillaCliente implements WithHeadings, WithStyles, ShouldAutoSize, With
         }
     }
 
-    
+
 }

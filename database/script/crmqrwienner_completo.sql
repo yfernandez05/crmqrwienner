@@ -23,9 +23,9 @@
 -- ============================================
 -- CREACIÓN DE BASE DE DATOS
 -- ============================================
-DROP DATABASE IF EXISTS crmqrwienner;
-CREATE DATABASE crmqrwienner CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE crmqrwienner;
+-- DROP DATABASE IF EXISTS crmqrwienner;
+-- CREATE DATABASE crmqrwienner CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- USE crmqrwienner;
 
 -- ============================================
 -- TABLA: cuentas
@@ -879,8 +879,38 @@ ALTER TABLE clientes DROP COLUMN isbeca18;
 ALTER TABLE evento_cliente DROP COLUMN isbeca18;
 ALTER TABLE configuracion_qr_colores DROP COLUMN es_beca18;
 
-DROP INDEX idx_grado_beca ON configuracion_qr_colores;
+-- DROP INDEX idx_grado_beca ON configuracion_qr_colores;
 CREATE INDEX idx_grado_beca ON configuracion_qr_colores (grado);
 
 -- Agregar el campo autorizo_uso_imagen a la tabla clientes
 ALTER TABLE clientes ADD autorizo_uso_imagen TINYINT(1) NOT NULL DEFAULT 0;
+
+-- fecha: 2025-12-20
+-- Agregar tabla para tipo de recordatorios
+CREATE TABLE `tiporecordatorios` (
+  `idtiporecordatorio` int NOT NULL AUTO_INCREMENT,
+  `tiporecordatorio` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `backgroundColor` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT '#d3d3d3',
+  `textColor` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT '#000',
+  `estado` char(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
+  `userinsert` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT 'sistemas@padinsolutions.com',
+  `dateinsert` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `userupdate` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `dateupdate` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idtiporecordatorio`),
+  UNIQUE KEY `ak_tiporecordatorio_tiporecordatorio` (`tiporecordatorio`,`estado`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+INSERT INTO tiporecordatorios (tiporecordatorio, backgroundColor, textColor, estado, userinsert, dateinsert)
+VALUES
+('MENSAJE DE REGISTRO ENVIADO', '#405ff7', '#ffffff', 'A', 'sistemas@padinsolutions.com', '2026-02-23 14:00:34'),
+('Recordatorio a 2 días', '#a824e5', '#ffffff', 'A', 'sistemas@padinsolutions.com', '2026-02-23 14:00:50'),
+('ULTIMO RECORDATORIO ES HOY', '#00c292', '#ffffff', 'A', 'sistemas@padinsolutions.com', '2026-02-23 14:01:05');
+
+ALTER TABLE clientes
+ADD COLUMN idtiporecordatorio INT NOT NULL DEFAULT 0 ,
+ADD COLUMN fecha_ultimo_envio  TIMESTAMP NULL DEFAULT NULL  AFTER idtiporecordatorio;
+
+ALTER TABLE clientes
+ADD COLUMN wamid VARCHAR(150) NULL;
