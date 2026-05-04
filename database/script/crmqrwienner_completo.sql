@@ -914,3 +914,12 @@ ADD COLUMN fecha_ultimo_envio  TIMESTAMP NULL DEFAULT NULL  AFTER idtiporecordat
 
 ALTER TABLE clientes
 ADD COLUMN wamid VARCHAR(150) NULL;
+
+-- fecha: 2026-04-23
+-- Agregar campo sede_destino a clientes
+ALTER TABLE clientes
+ADD COLUMN sede_destino VARCHAR(150) NULL AFTER colegio;
+
+ALTER TABLE evento_cliente
+ADD COLUMN sede_destino VARCHAR(150) NULL AFTER colegio;
+

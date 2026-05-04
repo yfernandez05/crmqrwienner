@@ -8,8 +8,6 @@
     <style>
 
 
-        /* //// */
-
         body {
             font-family: Arial, sans-serif;
             background-color: #f8f8f8;
@@ -21,7 +19,7 @@
             max-width: 600px;
             margin: 0 auto;
             padding: 0px;
-            background-color: #00cace;
+            background-color: #00a7a6;
             border-radius: 10px;
             box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
             margin: 10px auto;
@@ -32,9 +30,9 @@
         .qr-code {
             border-radius: 5px;
             display: block;
-            margin: 0 auto;
-            max-width: max-content;
             margin-bottom: 0.8em;
+            text-align: center;
+            align-items: center;
         }
         .qr-code img, .qr-code svg {
             border-radius: 10px;
@@ -74,19 +72,44 @@
         .center{
             text-align: center;
         }
-        
+
+        .titulonombre{
+               color: white;
+                padding: 20px 100px;
+                font-size: 25px;
+                font-family: sans-serif;
+                font-weight: 600;
+        }
+
     </style>
 </head>
 <body>
 <div class="container">
     <div class="cont-img">
-        <img src="{{ $message->embed('images/mail_gracias_header.jpg') }}" alt="Gracias por Registrarte" class="img-fluid">
+
+         <!-- header -->
+        <img src="{{ $message->embed('images/mail_headder.png') }}" alt="Gracias por Registrarte" class="img-fluid">
+        <p class="titulonombre">Hola, {{ $cliente->nombres }},
+            tu registro fue un éxito.
+            Te esperamos el</p>
+         <!-- sub body -->
+
+        @if($cliente->colegio == "Lima Norte")
+           <img src="{{ $message->embed('images/limanorte.png') }}" alt="limanorte" class="img-fluid">
+        @else
+            <img src="{{ $message->embed('images/limacentro.png') }}" alt="limacentro" class="img-fluid">
+        @endif
+
+        <img src="{{ $message->embed('images/tupase.png') }}" alt="tupase" class="img-fluid">
         <div class="qr-code mb-2">
-            <img src="{!! $message->embedData($qrCode, 'QR_Feria_2024.png', 'image/png') !!}" alt="QR Code"> <!-- prod --> 
+            <img src="{!! $message->embedData($qrCode, 'QR_Feria_2024.png', 'image/png') !!}" alt="QR Code"> <!-- prod -->
         </div>
-        <img src="{{ $message->embed('images/mail_gracias_footer.jpg') }}" alt="Gracias por Registrarte" class="img-fluid">
+
+        <!-- footer -->
+        <img src="{{ $message->embed('images/footer.png') }}" alt="footer" class="img-fluid">
+
     </div>
-        
+
     </div>
     <div class="center">
         <!-- Pie de página -->

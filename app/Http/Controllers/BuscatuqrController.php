@@ -141,7 +141,8 @@ class BuscatuqrController extends Controller
             $cliente = Cliente::query()
             ->select(
                 'idcliente', 'idcampania', 'nombres', 'apellidomaterno',
-                'apellidopaterno', 'email', /* 'telefono', 'carrera',
+                'apellidopaterno', 'email', 'colegio','sede_destino'
+                /* 'telefono', 'carrera',
                 'ismatricula', / 'colegio'/ , 'coddistrito', 'anioegreso', 'fecharegistro' */
             )
             ->where('estado', 'A')

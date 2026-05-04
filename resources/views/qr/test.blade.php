@@ -21,7 +21,7 @@
             max-width: 600px;
             margin: 0 auto;
             padding: 0px;
-            background-color: #ffeddc;
+            background-color: #00a7a6;
             border-radius: 10px;
             box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
             margin: 10px auto;
@@ -32,16 +32,16 @@
         .qr-code {
             border-radius: 5px;
             display: block;
-            margin: 0 auto;
-            max-width: max-content;
             margin-bottom: 0.8em;
+            text-align: center;
+            align-items: center;
         }
         .qr-code img, .qr-code svg {
             border-radius: 10px;
             display: block;
             margin: 0 auto;
-            max-width: 250px !important;
-            /* padding: 15px; */
+            max-width: 200px !important;
+            padding: 15px;
             background-color: white;
         }
         .qr-code h3{
@@ -74,17 +74,37 @@
         .center{
             text-align: center;
         }
-        
+
+        .titulonombre{
+               color: white;
+                padding: 20px 100px;
+                font-size: 25px;
+                font-family: sans-serif;
+                font-weight: 600;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="cont-img">
-        <img src="{{ asset('images/mail_gracias_header.jpg') }}" alt="Gracias por Registrarte" class="img-fluid">
-        <span class="center"><p>¡Te esperamos en el ...</p></span>
-        <img src="{{ asset('images/mail_gracias_footer.jpg') }}" alt="Gracias por Registrarte" class="img-fluid">
+        <!-- header -->
+        <img src="{{ asset('images/mail_headder.png') }}" alt="Gracias por Registrarte" class="img-fluid">
+        <p class="titulonombre">Hola, Yhonatan,
+            tu registro fue un éxito.
+            Te esperamos el</p>
+         <!-- sub body -->
+
+         <img src="{{ asset('images/limacentro.png') }}" alt="limacentro" class="img-fluid">
+         <img src="{{ asset('images/limanorte.png') }}" alt="limanorte" class="img-fluid">
+         <img src="{{ asset('images/tupase.png') }}" alt="tupase" class="img-fluid">
+        <div class="qr-code mb-2">
+            <img src="{!! asset('images/QR_Feria_2024.png') !!}" alt="QR Code"> <!-- prod -->
         </div>
-        
+
+        <!-- footer -->
+        <img src="{{ asset('images/footer.png') }}" alt="footer" class="img-fluid">
+    </div>
+
     </div>
     <div class="center">
         <!-- Pie de página -->

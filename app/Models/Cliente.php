@@ -37,6 +37,7 @@ class Cliente extends Model
             'grado',
             'carrera',
             'colegio',
+            'sede_destino',
             'uuidimportacion',
             'idtipoatencion',
             'asistencia',

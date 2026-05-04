@@ -320,6 +320,7 @@ class ClienteController extends BaseController
         $cliente->carrera = $request->carrera;
         $cliente->grado = $request->grado;
         $cliente->colegio = $request->has('sede') ? $request->sede : $request->colegio;
+        $cliente->sede_destino = $request->sede_destino;
         $cliente->email = $request->email;
         $cliente->idcampania = $request->idcampania;
         $cliente->procedencia = $request->input('procedencia') ?: 'Orgánico';

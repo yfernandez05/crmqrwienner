@@ -169,6 +169,7 @@
                             <th class="p-2 text-nowrap">F. Registro</th>
                             <th class="p-2">Carrera</th>
                             <th class="p-2">Campus</th>
+                            <th class="p-2">Sede Destino</th>
                             <th v-if="authenticatedUser.idrol < 6" class="p-2">Campaña</th>
                             <th class="p-2">Asistencia </th>
                             <th class="p-2">Autorizo</th>
@@ -227,6 +228,7 @@
                             <td v-text="cli.fecha" class="ui-max-w-100 text-truncate"></td>
                             <td v-text="cli.carrera" class="ui-max-w-200 text-truncate"></td>
                             <td v-text="cli.colegio" class="ui-max-w-200 text-truncate"></td>
+                            <td v-text="cli.sede_destino" class="ui-max-w-200 text-truncate"></td>
                             <td v-if="authenticatedUser.idrol < 6" v-text="cli.campania.nombrecampania" class="ui-max-w-200 text-truncate"></td>
                             <td>
                                 <span class="badge badge-pill py-1 px-3"

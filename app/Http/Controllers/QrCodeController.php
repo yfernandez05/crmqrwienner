@@ -210,6 +210,7 @@ class QrCodeController extends Controller
                 'grado' => $clientAsisten['grado'],
                 'carrera' => $clientAsisten['carrera'],
                 'colegio' => $clientAsisten['colegio'],
+                'sede_destino' => $clientAsisten['sede_destino'],
                 'uuidimportacion' => $clientAsisten['uuidimportacion'],
                 'asistencia' => $clientAsisten['asistencia'],
                 'fechaasistencia' => Carbon::now()->format('y-m-d H:i:s'),
