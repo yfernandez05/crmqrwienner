@@ -214,6 +214,10 @@
                                             class="btn btn-sm btn-outline-primary waves-effect waves-light border-0 mr-1">
                                         <i class="fas fa-headset fa-lg"></i>
                                     </button>
+                                    <button type="button" title="Reenviar Correo" @click="reenviarcorreo(cli)"
+                                            class="btn btn-sm btn-outline-info waves-effect waves-light border-0 mr-1">
+                                        <i class="fas fa-envelope fa-lg"></i> 
+                                    </button>
                                 </row-actions>
                             </td>
                             <td v-text="cli.idcliente"></td>
@@ -475,6 +479,39 @@
                                     }  else if (result.warning){
                                         warningMessage(result.message, appName);
                                         vm.listarCliente();
+                                    } else{
+                                        errorMessage(result.message, appName);
+                                    }
+
+                                })
+                                .catch(function (error) {
+                                    hidePreloader();
+                                    errorMessage(appErrorMessage, appName);
+                                    console.log(error);
+                                });
+                        }
+
+
+                    });
+            },
+            reenviarcorreo(param) {
+                let vm = this;
+
+                swalAlertConfirm(`¿Quieres enviar nuevamente el correo de confirmación a <b>${param.nombres}</b>?`, appName)
+                    .then(function (optionSelected) {
+
+                        if (optionSelected.value) {
+
+                            showPreloader();
+                            axios.post(`${appApiUrl}/cliente/${param.idcliente}/reenviarcorreo`)
+                                .then(function (response) {
+                                    hidePreloader();
+                                    let result = response.data;
+
+                                    if (result.status) {
+                                        successMessage(result.message, appName);
+                                    }  else if (result.warning){
+                                        warningMessage(result.message, appName);
                                     } else{
                                         errorMessage(result.message, appName);
                                     }

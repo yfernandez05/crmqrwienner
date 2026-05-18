@@ -67,6 +67,7 @@ Route::prefix('rest')->name('rest.')->group(function () {
     Route::get('cliente/descargarplantilla', 'ClienteController@descargarplantilla')->name('cliente.descargarplantilla');
     Route::get('cliente/descargarplantillamatricula', 'ClienteController@descargarplantillamatricula')->name('cliente.descargarplantillamatricula');
     Route::get('cliente/exportarexcel', 'ClienteController@exportarExcel')->name('cuenta.exportarexcel');
+    Route::post('cliente/{id}/reenviarcorreo', 'ClienteController@reenviarCorreo')->name('cliente.reenviarCorreo');
     Route::post('cliente/importarexcel', 'ClienteController@importarExcel')->name('cuenta.importarexcel');
     Route::post('cliente/physicallyremove', 'ClienteController@physicallyRemove')->name('cliente.physicallyremove');
     Route::post('cliente/saveClientQr', 'ClienteController@saveClientQr')->name('cliente.saveClientQr');

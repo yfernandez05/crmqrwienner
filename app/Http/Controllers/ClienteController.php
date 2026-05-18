@@ -692,22 +692,43 @@ class ClienteController extends BaseController
         return $query;
     }
 
-public function updateAutorizacionImagen(Request $request)
-{
-    $cliente = Cliente::find($request->idcliente);
-    if ($cliente) {
-        $cliente->autorizo_uso_imagen = ($request->autorizo_uso_imagen == '1' || $request->autorizo_uso_imagen === 1) ? 1 : 0;
-        try {
-            $cliente->save();
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Error al guardar']);
+    public function updateAutorizacionImagen(Request $request)
+    {
+        $cliente = Cliente::find($request->idcliente);
+        if ($cliente) {
+            $cliente->autorizo_uso_imagen = ($request->autorizo_uso_imagen == '1' || $request->autorizo_uso_imagen === 1) ? 1 : 0;
+            try {
+                $cliente->save();
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Error al guardar']);
+            }
+            $fresh = Cliente::find($cliente->idcliente);
+            return response()->json(['guardado' => $fresh->autorizo_uso_imagen]);
         }
-        $fresh = Cliente::find($cliente->idcliente);
-        return response()->json(['guardado' => $fresh->autorizo_uso_imagen]);
+        return ResultManager::errorMessage('Cliente no encontrado.');
     }
-    return ResultManager::errorMessage('Cliente no encontrado.');
-}
 
+
+    public function reenviarCorreo($id)
+    {
+        $result = '';
+
+        DB::beginTransaction();
+        try {
+
+            $cliente = Cliente::findOrFail($id);
+            $this->enviarCorreoConQR($cliente, false);
+            $result = ResultManager::successMessage('Correo reenviado correctamente.');
+            DB::commit();
+
+        } catch (Exception $e) {
+            DB::rollback();
+            LogErrorManager::saveInDB($this, __FUNCTION__, $e);
+            $result = ResultManager::errorMessage('No se pudo reenviar el correo, intente nuevamente.');
+        }
+
+        return $result;
+    }
 
 
 }
