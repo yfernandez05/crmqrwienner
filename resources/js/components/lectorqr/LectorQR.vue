@@ -506,6 +506,14 @@ export default {
             });
         },
 
+        onSearch: debounce(function (search) {
+            if (search.length < 3) {
+                return;
+            }
+            this.loading = true;
+            this.fetchClients(search);
+        }, 500),
+
         fetchClients(search) {
             axios.get(`${appApiUrl}/cliente/selectsearch`, { params: { search } })
                 .then(response => {

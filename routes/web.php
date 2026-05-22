@@ -29,6 +29,7 @@ Route::view('/testrute', 'qr/test')->name('thanks');
 Route::get('crm/{path?}', "SpaController@index")->where('path', '([A-z0-9-\/_.]+)?')->name('spa');
 
 // Ruta pública (sin autenticación)
+Route::get('descargatuentrada/{id}/', [ClienteController::class, 'pdfclienteevento'])->name('cliente.descargatuentrada');
 Route::get('/buscatuqr', [BuscatuqrController::class, 'index'])->name('buscatuqr.index');
 Route::get('registro', [ClienteController::class,'showViewRegisterCliente'])->name('cliente.registro');
 
@@ -58,6 +59,8 @@ Route::prefix('rest')->name('rest.')->group(function () {
     Route::get('evento/getevento', 'EventoController@getevento')->name('evento.getevento');
     Route::resource('evento', 'EventoController')->except(['edit', 'create']);
 
+    Route::get('cliente/urlcontrato/{id}', [ClienteController::class, 'urlcontrato'])->name('cliente.urlcontrato');
+    Route::get('cliente/pdfclienteevento/{id}', [ClienteController::class, 'pdfclienteevento'])->name('cliente.pdfclienteevento');
     Route::get('cliente/generatecard/{id}','ClienteController@generatecard')->name('cliente.generatecard');
     Route::get('cliente/selectsearch','ClienteController@selectsearch')->name('cliente.selectsearch');
     Route::get('cliente/donwloadqr','ClienteController@donwloadQR')->name('cliente.donwloadqr');

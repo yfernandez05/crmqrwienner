@@ -6,7 +6,7 @@
 
         <template v-slot:card-body-main>
             <div class="form-row">
-                
+
                 <div class="form-group col-12" :class="{'has-danger':errorExists('comentario')}">
                     <label>Comentario<small class="text-danger">(*)</small></label>
                     <textarea class="form-control"  v-model="atencion.comentario" @:keyup.enter ="doSaveData" rows="3"></textarea>
@@ -57,14 +57,14 @@
                     <label class="mb-0">Telefono</label>
                     <div class="input-group">
                         <span class="form-control form-control-sm text-truncate text-muted"
-                            v-text="cliente.telefono"></span>                       
+                            v-text="cliente.telefono"></span>
                     </div>
                 </div>
                 <div class="form-group form-group-sm col-12 col-sm-6 col-md-4 col-xl-3">
                     <label class="mb-0">Email</label>
                     <span class="form-control form-control-sm d-block text-truncate text-muted"
                         v-text="cliente.email"></span>
-                </div>                
+                </div>
                 <div class="form-group form-group-sm col-12 col-sm-6 col-md-4 col-xl-3">
                     <label class="mb-0">Carrera</label>
                     <span class="form-control form-control-sm d-block text-truncate text-muted"
@@ -115,7 +115,7 @@
                         <i class="fab fa-whatsapp fa-lg"></i> <span v-text="button.name"></span>
                     </a>
                 </div>
-                
+
             </div>
 
             <div class="table-responsive">
@@ -168,8 +168,8 @@
                 },
                 tipoatenciones:[],
                 cliente:{
-                    campania:{  
-                        evento:{nombreevento: '',}                      
+                    campania:{
+                        evento:{nombreevento: '',}
                     },
                     distrito:{}
                 },
@@ -186,6 +186,7 @@
 
             this.obtenerCliente(this.cliente.idcliente);
             this.obtenerAtenciones(this.cliente.idcliente);
+            this.getAccesTiketsQR(this.cliente.idcliente);
         },
         methods: {
             validateFields() {
@@ -198,7 +199,7 @@
                 if (!this.atencion.comentario) {
                     this.setError('comentario', 'El campo Comentario es obligatorio');
                 }
-               
+
                 if (!this.atencion.fechaatencion) {
                     this.setError('fechaatencion', 'El campo Fecha Ingreso es obligatorio');
                 }
@@ -254,7 +255,7 @@
                     fechaatencion: this.atencion.fechaatencion,
                     idcliente: this.cliente.idcliente,
                     idtipoatencion: this.atencion.idtipoatencion,
-                    
+
                 };
 
                 let vm = this;
@@ -342,7 +343,9 @@
                     '{email}': this.cliente.email || '-',
                     '{telefono}': this.cliente.telefono || '-',
                     '{direccion}': this.cliente.direccion || '-',
-                    //'{sede}': `${this.cliente.colegio}` || '-',
+                    '{urlpdfqr}': `${this.entradasqrurl}` || '-',
+                    '{urlbuscatuqr}': `${window.appRootUrl}/buscatuqr?email=${this.cliente.email}` || '-',
+                    '{sede}': this.cliente.colegio || '-',
                     //'{direccionsede}': `${direccion}` || '-'
                 };
 
@@ -360,6 +363,19 @@
                 } else {
                     alert('Número de teléfono no válido. Debe ser un número peruano válido con 9 dígitos y comenzar con 9.');
                 }
+            },
+            getAccesTiketsQR($idcliente) {
+
+                let vm = this;
+                vm.entradasqrurl = '';
+                axios.get(`${appApiUrl}/cliente/urlcontrato/${$idcliente}`)
+                    .then(response => {
+                        vm.entradasqrurl = response.data.urlpdfqracceso;
+                        console.log('url entrada: ', vm.entradasqrurl);
+                    })
+                    .catch(error => {
+                        console.error("Error al obtener la url Entradas:", error);
+                    });
             },
             downloadSingleQR(data) {
                 console.log(data);
@@ -396,7 +412,7 @@
                 .finally(function() {
                     hidePreloader();
                 });
-                
+
             },
 
         },

@@ -1,40 +1,41 @@
 <?php
 
 namespace App\Http\Controllers;
-use Intervention\Image\ImageManagerStatic as Image;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Exception;
-use Carbon\Carbon;
-use App\Models\Cliente;
-use App\Util\RuleManager;
-use App\Util\ResultManager;
-use Illuminate\Http\Request;
-
-use App\Util\LogErrorManager;
 use App\Exports\ClientesExport;
 use App\Exports\plantillaCliente;
 use App\Exports\plantillaExportMatricula;
 use App\Mail\MessageReceived;
 use App\Models\Campania;
+use App\Models\Cliente;
 use App\Models\EventoCliente;
 use App\Models\PaginaDinamica;
+use App\Util\LogErrorManager;
+use App\Util\ResultManager;
+use App\Util\RuleManager;
+use App\Util\SedeHelper;
+use App\Util\SignedUrlUtils;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Support\Str;
 use Intervention\Image\Exception\NotReadableException;
+use Intervention\Image\ImageManagerStatic as Image;
+use Maatwebsite\Excel\Facades\Excel;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use ZipArchive;
 
 class ClienteController extends BaseController
 {
     public function __construct()
     {
-        parent::__construct(['index', 'showViewRegisterCliente', 'saveClientQr']);
+        parent::__construct(['index', 'urlcontrato','showViewRegisterCliente', 'saveClientQr']);
     }
 
     /**
@@ -730,5 +731,59 @@ class ClienteController extends BaseController
         return $result;
     }
 
+
+    public function urlcontrato($id)
+    {
+        $urlConFirma = SignedUrlUtils::generateSignedUrl('cliente.descargatuentrada', ['id' => $id]);
+        return response()->json(['urlpdfqracceso' => $urlConFirma]);
+    }
+
+   public function pdfclienteevento($id)
+    {
+
+        $currentUrl = request()->url();
+        $expectedUrlDescarga = route('cliente.descargatuentrada', ['id' => $id]);
+
+        if ($currentUrl === $expectedUrlDescarga) {
+            $signature = request()->query('signature');
+            if (!$signature) {
+                abort(403, 'Firma ausente');
+            }
+
+            $urlSinFirma = route('cliente.descargatuentrada', [
+                'id' => $id,
+            ], false); // "false"
+
+            $key = env('APP_KEY');
+            if (Str::startsWith($key, 'base64:')) {
+                $key = base64_decode(Str::after($key, 'base64:'));
+            }
+
+            $firmaCalculada = hash_hmac('sha256', $urlSinFirma, $key);
+
+            if (!hash_equals($firmaCalculada, $signature)) {
+                abort(403, 'Firma no válida');
+            }
+        }
+
+        $cliente = Cliente::findOrFail($id);
+
+        $qryf = $this->enviarCorreoConQR($cliente, true);
+        $qrCodeDataUri = 'data:image/svg+xml;base64,' . base64_encode($qryf);//local
+
+
+        $cliente->loadMissing('campania');
+        $sedeInfo = SedeHelper::getSedeInfo($cliente->colegio, $cliente->campania);
+
+        $pdf = Pdf::loadView('qrclientes.qrclientes_invitados', [
+            'cliente' => $cliente,
+            'sedeInfo' => $sedeInfo,
+            'qryf' => $qrCodeDataUri
+        ]);
+
+        $pdf->setPaper('A4', 'landscape');
+
+        return $pdf->stream('qr-acceso-' . $cliente->nombres .' '. $cliente->apellidopaterno. '.pdf');
+    }
 
 }
