@@ -869,7 +869,7 @@ ADD COLUMN `api_token` VARCHAR(100) NULL;
 INSERT INTO `paginas_dinamicas`
 (`slug`, `titulo`, `descripcion`, `idcampania`, `api_token`, `estado_general`, `estado`, `userinsert`, `dateinsert`)
 VALUES
-('registro', 'Registro de Participantes', 'Formulario de registro público para eventos.', 16, 'wiener_registro_2026_secret_token', 'A', 'A', 'sistema', NOW());
+('registro', 'Registro de Participantes', 'Formulario de registro público para eventos.', 17, 'wiener_registro_2026_secret_token', 'A', 'A', 'sistema', NOW());
 
 -- Renombrar la columna anio_egreso a grado en la tabla configuracion_qr_colores
 ALTER TABLE configuracion_qr_colores CHANGE anio_egreso grado VARCHAR(50) NULL COMMENT 'Grado, NULL para default';
@@ -922,4 +922,7 @@ ADD COLUMN sede_destino VARCHAR(150) NULL AFTER colegio;
 
 ALTER TABLE evento_cliente
 ADD COLUMN sede_destino VARCHAR(150) NULL AFTER colegio;
+
+-- Actualizar la paginas_dinamicas con el ID de la campaña activa
+UPDATE paginas_dinamicas SET idcampania = 17 WHERE slug = 'registro';
 

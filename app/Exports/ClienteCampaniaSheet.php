@@ -52,8 +52,8 @@ class ClienteCampaniaSheet implements FromCollection,WithStyles, ShouldAutoSize,
         if ($this->request->exists('fechahasta')) {
             $fechahasta = Carbon::createFromFormat('d-m-Y', $this->request->fechahasta)->toDateString();
             $consultas->whereDate('fecharegistro', '<=', $fechahasta); //pasasmos como consulta el campos fecharegistro
-        } 
-        
+        }
+
         return $consultas
         ->orderBy('idcliente', 'DESC')
         ->get();
@@ -64,7 +64,7 @@ class ClienteCampaniaSheet implements FromCollection,WithStyles, ShouldAutoSize,
     * @var Invoice $invoice
     */
     public function map($model): array
-    {        
+    {
 
         return [
             $model->idcliente,
@@ -73,16 +73,17 @@ class ClienteCampaniaSheet implements FromCollection,WithStyles, ShouldAutoSize,
             $model->apellidomaterno,
             $model->email,
             $model->telefono,
-            $model->tipodocumento,         
+            $model->tipodocumento,
             $model->dni,
             $model->grado,
             $model->anioegreso,
             $model->fecha,
             $model->asistencianame,
-            $model->fechapresencia,          
+            $model->fechapresencia,
             $model->carrera,
-            $model->matriculaname,  
-            /* $model->colegio, */
+            $model->colegio,
+            $model->sede_destino,
+            $model->matriculaname,
             $model->procedencia,
             /* $model->utm, */
             $model->campaign_content,
@@ -111,8 +112,10 @@ class ClienteCampaniaSheet implements FromCollection,WithStyles, ShouldAutoSize,
             'Año Egreso',
             'Fecha Registro',
             'Asistencia',
-            'Fecha Asistencia',        
-            'Carrera',            
+            'Fecha Asistencia',
+            'Carrera',
+            'Campus',
+            'Sede Destino',
             'Matricula',
             /* 'Sede', */
             'Procedencia',
@@ -133,9 +136,9 @@ class ClienteCampaniaSheet implements FromCollection,WithStyles, ShouldAutoSize,
         return [
            1    => [
                'font' => [
-                   'bold' => true,                   
-               ],          
-           ],                
+                   'bold' => true,
+               ],
+           ],
         ];
     }
 

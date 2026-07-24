@@ -26,7 +26,7 @@
                     <div class="form-group col-12 col-sm-12" >
                         <label><small>Vista previa:</small></label><br>
                         <button v-show="buttonmessage.name" v-bind:style="{background: buttonmessage.backgroundColor, color:buttonmessage.textColor}" class="btn btn-sm button-notification" style="transition: 'all 0.3s ease'">
-                            <i class="fab fa-whatsapp fa-lg"></i> 
+                            <i class="fab fa-whatsapp fa-lg"></i>
                             <span v-text="buttonmessage.name"></span>
                         </button>
                     </div>
@@ -35,10 +35,10 @@
                         <label class="mb-2">Texto del Mensaje</label><br>
 
                         <a class="btn btn-light btn-sm btn-icon-active-wsp d-none d-lg-inline" @click="toggleEmojiPicker">😀</a> <span class="d-none d-lg-inline">Agregar emoji</span>
-                        
+
                         <div v-if="showEmojiPicker" class="emoji-picker-container">
                           <picker native :data="emojiIndex" @select="insertEmoji" title="Selecciona tu emoji"
-                            :i18n="{ search: 'Buscar', categories: { 
+                            :i18n="{ search: 'Buscar', categories: {
                                     search: 'Resultados de la búsqueda',
                                     recent: 'Reciente',
                                     smileys: 'Emoticonos y gente',
@@ -55,9 +55,9 @@
                         </div>
 
                         <div v-if="showEmojiPicker" class="emoji-picker-overlay" @click="closeEmojiPicker"></div>
-                        
+
                         <textarea class="form-control" v-model="buttonmessage.descriptionwhatsapp" ref="messageTextarea" rows="7" placeholder="Escribe un texto que se enviara al dar clic al boton creado" style="background-color: #eeeeee;"></textarea>
-                        
+
                         <small class="form-text text-muted">
                             Atributos disponibles del alumno:
                         </small>
@@ -68,7 +68,7 @@
                         </div>
 
                     </div>
-                    
+
                 </div>
                 <div class="col-sm-12 col-lg-4 d-none d-lg-inline">
                     <div class="mobile-preview-yf" style="height: 466px; width: 281px; margin: 0px auto; z-index: 5; position: relative;">
@@ -153,7 +153,7 @@
         </template>
 
     </main-content>
-</template> 
+</template>
 
 
 <script>
@@ -161,7 +161,7 @@
     import VInputColorpicker from 'vue-native-color-picker'
     import data from 'emoji-mart-vue-fast/data/all.json'
     import { Picker, EmojiIndex } from 'emoji-mart-vue-fast'
-    
+
     export default {
         props: {
             cardTitle: {
@@ -190,10 +190,13 @@
                 { label: 'Apellido Materno', variable: '{apellidomaterno}', sample: 'Gómez' },
                 { label: 'Correo', variable: '{email}', sample: 'juan_p_fc@gmail.com' },
                 { label: 'Celular', variable: '{telefono}', sample: '912345678' },
+                { label: 'Sede', variable: '{sede}', sample: 'Lima Centro' },
+                { label: 'Url PDF QR Accesos', variable: '{urlpdfqr}', sample: 'https://descargatuacceesoqr.com/Ddr125r14t' },
+                { label: 'Url Busca tu QR', variable: '{urlbuscatuqr}', sample: `${window.appRootUrl}/buscatuqr?email=elcorreo@gmail.com` },
                 //{ label: 'Sede', variable: '{sede}', sample: 'Campus Villa' },
                 //{ label: 'Direccion Sede', variable: '{direccionsede}', sample: 'Panamericana Sur Km. 19' },
               ],
-                
+
             }
         },
         methods: {
@@ -241,10 +244,10 @@
                 const endPos = textarea.selectionEnd;
                 const textBefore = this.buttonmessage.descriptionwhatsapp.substring(0, startPos);
                 const textAfter = this.buttonmessage.descriptionwhatsapp.substring(endPos, this.buttonmessage.descriptionwhatsapp.length);
-                
+
                 // Insertar la variable en la posición del cursor
                 this.buttonmessage.descriptionwhatsapp = textBefore + variable + textAfter;
-                
+
                 // Colocar el cursor después de la variable insertada
                 this.$nextTick(() => {
                     textarea.selectionStart = textarea.selectionEnd = startPos + variable.length;
@@ -253,7 +256,7 @@
             },
 
             getPreviewText() {
-                let previewText = this.buttonmessage.descriptionwhatsapp;              
+                let previewText = this.buttonmessage.descriptionwhatsapp;
                 if(previewText){
                         this.variables.forEach(vari => {
                         const regex = new RegExp(vari.variable, 'g');
@@ -261,7 +264,7 @@
                     });
                     return previewText;
                 }
-              
+
             },
 
             toggleEmojiPicker() {

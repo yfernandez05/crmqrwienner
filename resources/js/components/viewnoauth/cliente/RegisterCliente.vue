@@ -93,7 +93,7 @@
                                     </div>
                                 </div>
 
-                               <!-- Escoge tu campus -->
+                                <!-- Escoge tu campus -->
                                 <div class="col-12 col-md-6 mb-3" v-if="form.carrera && sedesFiltradas.length > 1">
                                     <label class="form-label">Escoge tu campus*</label>
                                     <select v-model="form.sedes" class="form-select"
@@ -133,6 +133,33 @@
                                         {{ showError('anioegreso')?.errorDetail }}
                                     </div>
                                 </div>
+
+                                <!-- ¿A qué Wiener Fest deseas asistir? -->
+                                <div class="col-12 mb-2">
+                                    <label class="form-label">¿A qué Wiener Fest deseas asistir?*</label>
+                                    <div
+                                        v-for="(destino, index) in sedeDestinoOptions"
+                                        :key="destino"
+                                        class="form-check mb-2"
+                                    >
+                                        <input
+                                            class="form-check-input"
+                                            type="radio"
+                                            :id="`sedeDestino${index}`"
+                                            name="sedeDestino"
+                                            :value="destino"
+                                            v-model="form.sede_destino"
+                                            :class="{ 'is-invalid': errorExists('sede_destino') }"
+                                        />
+                                        <label class="form-check-label" :for="`sedeDestino${index}`">
+                                            {{ destino }}
+                                        </label>
+                                    </div>
+                                    <div class="invalid-feedback d-block" v-if="errorExists('sede_destino')">
+                                        {{ showError('sede_destino')?.errorDetail }}
+                                    </div>
+                                </div>
+
 
                                 <!-- CHECKBOXES -->
                                 <div class="col-12">
@@ -200,7 +227,7 @@ export default {
                  apellidomaterno: "GENERICO",
                  apellidopaterno: "",
                  carrera: "",
-                 sedes: "",
+                  sedes: "",
                  grado: "",
                  edad: null,
                  email: "",
@@ -210,6 +237,7 @@ export default {
                  prefijo: "Perú (+51)",
                  tipodocumento: "DNI",
                  dni: "7777777",
+                  sede_destino: "",
             },
             checks: {
                 privacidad: true,
@@ -241,6 +269,11 @@ export default {
                 'CONTABILIDAD Y AUDITORÍA': ["Lima Centro"],// no hay sede Lima Centro ni Lima Norte
             },
             anioEgresoOptions: ["4to", "5to", "Ya terminé colegio"],
+            sedesOptions: ["Lima Centro", "Lima Norte"],
+            sedeDestinoOptions: [
+                "Sábado 23 de mayo - Wiener Fest Lima Centro",
+                "Sábado 30 de mayo - Wiener Fest Lima Norte",
+            ],
             departamentosOptions: [
                 { "coddepartamento": "01", "departamento": "Amazonas", "nombrecompleto": "Amazonas" },
                 { "coddepartamento": "02", "departamento": "Áncash", "nombrecompleto": "Áncash" },
@@ -268,7 +301,6 @@ export default {
                 { "coddepartamento": "24", "departamento": "Tumbes", "nombrecompleto": "Tumbes" },
                 { "coddepartamento": "25", "departamento": "Ucayali", "nombrecompleto": "Ucayali" }
             ],
-            sedesOptions: ["Lima Centro", "Lima Norte"],
             conf_pag_registro: null
         };
     },
@@ -346,6 +378,7 @@ export default {
             if (!this.form.carrera) this.setError("carrera", "Selecciona una carrera.");
             if (!this.form.sedes) this.setError("sedes", "Selecciona un campus.");
             if (!this.form.grado) this.setError("grado", "Selecciona tu grado de estudios.");
+            if (!this.form.sede_destino) this.setError("sede_destino", "Selecciona una fecha y sede del Wiener Fest.");
             if (this.form.grado === 'Ya terminé colegio') {
                 if (!this.form.anioegreso) {
                 this.setError("anioegreso", "El año de egreso es obligatorio.");
@@ -363,12 +396,14 @@ export default {
             return this.errors;
         },
         buildPayload() {
+            const sedeDestino = String(this.form.sede_destino || '');
             return {
                 anioegreso: String(this.form.anioegreso),
                 apellidomaterno: String(this.form.apellidomaterno),
                 apellidopaterno: String(this.form.apellidopaterno),
                 carrera: String(this.form.carrera),
                 colegio: String(this.form.sedes),
+                sede_destino: sedeDestino,
                 grado: String(this.form.grado),
                 edad: Number(this.form.edad) || 0,
                 email: String(this.form.email),
@@ -378,6 +413,7 @@ export default {
                 prefijo: String(this.form.prefijo),
                 tipodocumento: String(this.form.tipodocumento),
                 dni: String(this.form.dni),
+                autorizo_uso_imagen: 0,
                 // isbeca18 eliminado
                 coddepartamento: String(this.form.coddepartamento) || '15',
                 coddistrito: null,
@@ -495,6 +531,7 @@ export default {
                 prefijo: "Perú (+51)",
                 tipodocumento: "DNI",
                 dni: "7777777",
+                sede_destino: "",
             };
 
             this.checks = { privacidad: false };
@@ -509,20 +546,20 @@ export default {
         }
     },
     watch: {
-        'form.carrera'(newCarrera) {
-            const sedes = this.carreraSedeMap[newCarrera] || [];
-            // Si solo hay una sede, la asigna automáticamente
-            if (sedes.length === 1) {
-                this.form.sedes = sedes[0];
-            } else {
-                this.form.sedes = '';
-            }
-        },
         'form.grado'(newGrado) {
         if (newGrado !== 'Ya terminé colegio') {
             this.form.anioegreso = '';
         }
-    }
+    },
+        'form.carrera'(newCarrera) {
+            if (!newCarrera) {
+                this.form.sedes = '';
+                return;
+            }
+
+            const sedesCarrera = this.carreraSedeMap[newCarrera] || this.sedesOptions;
+            this.form.sedes = sedesCarrera.length === 1 ? sedesCarrera[0] : '';
+        },
     },
 
 };
