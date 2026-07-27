@@ -84,6 +84,7 @@ class ClienteCampaniaSheet implements FromCollection,WithStyles, ShouldAutoSize,
             $model->colegio,
             $model->sede_destino,
             $model->matriculaname,
+            $model->es_padre_familia ,
             $model->procedencia,
             /* $model->utm, */
             $model->campaign_content,
@@ -117,6 +118,7 @@ class ClienteCampaniaSheet implements FromCollection,WithStyles, ShouldAutoSize,
             'Campus',
             'Sede Destino',
             'Matricula',
+            'Padre de Fam.',
             /* 'Sede', */
             'Procedencia',
             /* 'Utm', */

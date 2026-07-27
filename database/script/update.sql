@@ -593,3 +593,6 @@ VALUES
 
 -- ALTER TABLE clientes ADD COLUMN prefijo VARCHAR(50) NULL;
 -- ALTER TABLE evento_cliente ADD COLUMN prefijo VARCHAR(50) NULL;
+
+
+ALTER TABLE clientes ADD COLUMN `es_padre_familia` VARCHAR(4) DEFAULT 'No';

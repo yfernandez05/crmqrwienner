@@ -30,6 +30,7 @@ class plantillaCliente implements WithHeadings, WithStyles, ShouldAutoSize, With
             'Campus',
             'Preferencia Sede',
             'Año Egreso',
+            'Padre Fam.',
             'Procedencia',
             'campaign_content',
             'campaign_medium',
@@ -52,6 +53,7 @@ class plantillaCliente implements WithHeadings, WithStyles, ShouldAutoSize, With
             'Campus Lima',
             'Sede Lima',
             '',
+            'No',
             'Orgánico',
             '',
             '',
@@ -101,7 +103,7 @@ class plantillaCliente implements WithHeadings, WithStyles, ShouldAutoSize, With
                 $this->applyDataValidation($sheet, 'I', '"4to,5to"', 2, 900);
 
                 // Aplicar validación de datos para "Año Egreso"
-                $this->applyDataValidation($sheet, 'K', '"Orgánico,Pauta"', 2, 900);
+                $this->applyDataValidation($sheet, 'N', '"Orgánico,Pauta"', 2, 900);
 
 
             },

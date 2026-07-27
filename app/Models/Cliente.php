@@ -48,6 +48,7 @@ class Cliente extends Model
             'anioegreso',
             'autorizo_uso_imagen',
             'estado',
+            'es_padre_familia'
     ];
 
     protected $hidden = [

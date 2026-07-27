@@ -178,6 +178,7 @@
                             <!-- <th class="p-2">Sede</th> -->
                             <th class="p-2">Grado</th>
                             <th class="p-2">Año Egreso</th>
+                            <th class="p-2">Padre Fam.</th>
                             <th class="p-2">Matriculas</th>
                             <th class="p-2">Procedencia</th>
                             <th class="p-2">utm</th>
@@ -249,6 +250,7 @@
                             <!-- <td v-text="cli.colegio " class="ui-max-w-200 text-truncate"></td> -->
                             <td v-text="cli.grado"></td>
                             <td v-text="cli.anioegreso"></td>
+                            <td v-text="cli.es_padre_familia"></td>
                             <td class="ui-max-w-200 text-truncate">
                                 <span class="badge badge-pill py-1 px-3"
                                     :class="cli.ismatricula ? 'badge-primary':'badge-secondary'" v-text="cli.matriculaname">
