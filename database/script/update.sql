@@ -596,3 +596,7 @@ VALUES
 
 
 ALTER TABLE clientes ADD COLUMN `es_padre_familia` VARCHAR(4) DEFAULT 'No';
+ALTER TABLE clientes ADD COLUMN `padre_nombres` VARCHAR(150) NULL;
+ALTER TABLE clientes ADD COLUMN `padre_apellidos` VARCHAR(150) NULL;
+ALTER TABLE clientes ADD COLUMN `padre_celular` VARCHAR(12) NULL;
+ALTER TABLE clientes ADD COLUMN `padre_email` VARCHAR(150) NULL;

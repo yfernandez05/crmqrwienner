@@ -338,6 +338,10 @@ class ClienteController extends BaseController
         $cliente->anioegreso = $request->anioegreso;
         $cliente->autorizo_uso_imagen = $request->has('autorizo_uso_imagen') ? (int)$request->autorizo_uso_imagen : 0;
         $cliente->es_padre_familia = $request->es_padre_familia;
+        $cliente->padre_nombres = $request->padre_nombres;
+        $cliente->padre_apellidos = $request->padre_apellidos;
+        $cliente->padre_celular = $request->padre_celular;
+        $cliente->padre_email = $request->padre_email;
 
         return $cliente;
     }
