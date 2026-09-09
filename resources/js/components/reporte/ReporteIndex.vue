@@ -63,6 +63,44 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-row" v-if="reporte.idcampania">
+                        <div class="form-group col-12 col-sm-6 col-md-3">
+                            <div class="card-totalizer card-totalizer-registro">
+                                <img src="/images/iconoregistro.png" alt="Registrados" class="card-totalizer-icon">
+                                <div class="card-totalizer-text">
+                                    <label class="card-totalizer-label">Cantidad de Registrados</label>
+                                    <span class="card-totalizer-value" v-text="reporte.totalregistrados"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-12 col-sm-6 col-md-3">
+                            <div class="card-totalizer card-totalizer-asistente">
+                                <img src="/images/icono-asistente.png" alt="Asistencia" class="card-totalizer-icon">
+                                <div class="card-totalizer-text">
+                                    <label class="card-totalizer-label">Cantidad de Asistentes</label>
+                                    <span class="card-totalizer-value" v-text="reporte.totalasistentes"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-12 col-sm-6 col-md-3">
+                            <div class="card-totalizer card-totalizer-centro">
+                                <label class="card-totalizer-label">Sede Centro (Reg/Asist)</label>
+                                <span class="card-totalizer-value">
+                                    {{ reporte.totalsede.centro.registrados }}/{{ reporte.totalsede.centro.asistentes }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group col-12 col-sm-6 col-md-3">
+                            <div class="card-totalizer card-totalizer-norte">
+                                <label class="card-totalizer-label">Sede Norte (Reg/Asist)</label>
+                                <span class="card-totalizer-value">
+                                    {{ reporte.totalsede.norte.registrados }}/{{ reporte.totalsede.norte.asistentes }}
+                                </span>
+                            </div>
+                        </div>
+                </div>
+
                 <div class="form-row border_report">
                     <!-- chartr lienal clientes registros -->
                     <div class="form-group m-0 pt-2 pb-5 px-2 col-12 ">
@@ -302,6 +340,13 @@ export default {
                 asistenciastatus: 0,
                 import: false,
                 importstatus: 0,
+
+                totalregistrados: 0,
+                totalasistentes: 0,
+                totalsede: {
+                    centro: { registrados: 0, asistentes: 0 },
+                    norte: { registrados: 0, asistentes: 0 }
+                },
 
                 clientedata:[],
 
@@ -608,6 +653,10 @@ export default {
             // this.reporte.registromatriculadodata = [];
             this.reporte.registrogradodata = [];
             this.reporte.registrosendnotificationdata = [];
+            this.reporte.totalregistrados = 0;
+            this.reporte.totalasistentes = 0;
+            this.reporte.totalsede.centro = { registrados: 0, asistentes: 0 };
+            this.reporte.totalsede.norte = { registrados: 0, asistentes: 0 };
         },
 
 
@@ -629,6 +678,8 @@ export default {
             this.registrocarreras();
             this.enviosnotificacion();
             this.repogrados();
+            this.obtenerTotales();
+            this.obtenerTotalesPorSede();
         },
 
         printme() {
@@ -675,7 +726,50 @@ export default {
                 hidePreloader(); // Ocultar preloader en caso de error
             });
             }, 900);
-        }
+        },
+
+        obtenerTotales(){
+            let vm = this;
+            axios.get(`${appApiUrl}/reporte/totales`, {
+                params: {
+                    idevento: this.reporte.idevento,
+                    idcampania: this.reporte.idcampania,
+                    idcolegio: this.reporte.idcolegio,
+                    import: this.reporte.importstatus
+                }
+            })
+            .then(function (response){
+                let result = response.data;
+                vm.reporte.totalregistrados = result.totalregistrados || 0;
+                vm.reporte.totalasistentes = result.totalasistentes || 0;
+            })
+            .catch(function (error){
+                console.log(error);
+            })
+        },
+        obtenerTotalesPorSede(){
+            let vm = this;
+
+            const params = {
+                idevento: this.reporte.idevento,
+                idcampania: this.reporte.idcampania,
+                import: this.reporte.importstatus
+            };
+
+            axios.get(`${appApiUrl}/reporte/totales`, { params: { ...params, idcolegio: 'Lima Centro' } })
+            .then(function (response){
+                vm.reporte.totalsede.centro.registrados = response.data.totalregistrados || 0;
+                vm.reporte.totalsede.centro.asistentes = response.data.totalasistentes || 0;
+            })
+            .catch(function (error){ console.log(error); });
+
+            axios.get(`${appApiUrl}/reporte/totales`, { params: { ...params, idcolegio: 'Lima Norte' } })
+            .then(function (response){
+                vm.reporte.totalsede.norte.registrados = response.data.totalregistrados || 0;
+                vm.reporte.totalsede.norte.asistentes = response.data.totalasistentes || 0;
+            })
+            .catch(function (error){ console.log(error); });
+        },
 
     },
     mounted(){
@@ -725,5 +819,47 @@ export default {
     align-items: center;
     justify-content: center;
     height: 100%;
+}
+.card-totalizer{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    padding: 18px 20px;
+    border-left: 4px solid #17c9c9;
+    height: 100%;
+}
+.card-totalizer-icon{
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+.card-totalizer-text{
+    display: flex;
+    flex-direction: column;
+}
+.card-totalizer-label{
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #6c757d;
+    letter-spacing: .5px;
+    margin: 0 0 4px 0;
+    font-weight: 600;
+}
+.card-totalizer-value{
+    font-size: 30px;
+    font-weight: 700;
+    color: #212529;
+    line-height: 1;
+}
+
+.card-totalizer-registro{
+    border-left-color: #17c9c9;
+}
+.card-totalizer-asistente{
+    border-left-color: #17c9c9;
 }
 </style>

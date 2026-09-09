@@ -600,3 +600,78 @@ ALTER TABLE clientes ADD COLUMN `padre_nombres` VARCHAR(150) NULL;
 ALTER TABLE clientes ADD COLUMN `padre_apellidos` VARCHAR(150) NULL;
 ALTER TABLE clientes ADD COLUMN `padre_celular` VARCHAR(12) NULL;
 ALTER TABLE clientes ADD COLUMN `padre_email` VARCHAR(150) NULL;
+
+
+CREATE TABLE `encuesta_wiener_fest` (
+  `idencuesta` int(11) NOT NULL,
+  `idcampania` int(11) DEFAULT NULL,
+  `idevento` int(11) DEFAULT NULL,
+  `q1_conocimiento_antes` tinyint(1) NOT NULL,
+  `q2_conocimiento_despues` tinyint(1) NOT NULL,
+  `q3_gusto_mas` varchar(500) NOT NULL,
+  `q4_sentimiento_general` tinyint(1) NOT NULL,
+  `q5_taller_general` tinyint(1) DEFAULT NULL,
+  `q5_tallerista` tinyint(1) DEFAULT NULL,
+  `q5_aprendio_nuevo` tinyint(1) DEFAULT NULL,
+  `q6_nps` tinyint(2) NOT NULL,
+  `q7_intencion_estudiar` tinyint(1) NOT NULL,
+  `q8_que_cambiarias` text NOT NULL,
+  `q9_como_se_entero` tinyint(1) NOT NULL,
+  `q10_situacion_actual` tinyint(1) NOT NULL,
+  `estado` char(1) NOT NULL DEFAULT 'A',
+  `ip_hash` varchar(64) DEFAULT NULL,
+  `user_agent_hash` varchar(64) DEFAULT NULL,
+  `origen_qr` varchar(255) DEFAULT NULL,
+  `userinsert` varchar(60) DEFAULT 'encuesta_publica',
+  `dateinsert` timestamp NOT NULL DEFAULT current_timestamp(),
+  `userupdate` varchar(60) DEFAULT NULL,
+  `dateupdate` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE `encuesta_wiener_fest`
+  ADD PRIMARY KEY (`idencuesta`),
+  ADD KEY `idx_encuesta_idcampania` (`idcampania`),
+  ADD KEY `idx_encuesta_idevento` (`idevento`),
+  ADD KEY `idx_encuesta_dateinsert` (`dateinsert`),
+  ADD KEY `idx_encuesta_estado` (`estado`);
+
+ALTER TABLE `encuesta_wiener_fest`
+  MODIFY `idencuesta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+-- actualiozar la tabla dinamica para que la encuesta wiener fest tenga el idcampania correcto
+
+
+
+INSERT INTO paginas_dinamicas (`slug`, `titulo`, `descripcion`, `idcampania`, `estado_general`, `estado`, `userinsert`, `dateinsert`, `userupdate`) VALUES ('encuesta', 'Encuesta de de Participantes', 'Encuesta de Participantes anonima', '13', 'A', 'A', 'sistema', '2026-01-29 15:45:38', 'sistemas@padinsolutions.com');
+
+----- reporte new
+DROP PROCEDURE IF EXISTS `SP_RP_TOTALES_REGISTRO_ASISTENCIA`;
+DELIMITER //
+CREATE PROCEDURE `SP_RP_TOTALES_REGISTRO_ASISTENCIA`(
+    IN p_idevento INT,
+    IN p_idcampania INT,
+    IN p_colegio VARCHAR(100),
+    IN p_import INT
+)
+BEGIN
+    IF p_idevento > 0 THEN
+        SELECT
+            COUNT(ec.idcliente) AS totalregistrados,
+            COUNT(CASE WHEN ec.asistencia = 1 THEN 1 END) AS totalasistentes
+        FROM clientes cl
+        INNER JOIN evento_cliente ec ON cl.idcliente = ec.idcliente
+        WHERE cl.estado = 'A'
+          AND cl.idcampania = p_idcampania
+          AND ec.idevento = p_idevento
+          AND (p_colegio IS NULL OR p_colegio = '' OR cl.colegio COLLATE utf8mb4_unicode_ci = p_colegio COLLATE utf8mb4_unicode_ci);
+    ELSE
+        SELECT
+            COUNT(CASE WHEN (p_import = 0 OR (p_import = 1 AND uuidimportacion IS NULL)) THEN idcliente END) AS totalregistrados,
+            COUNT(CASE WHEN asistencia = 1 THEN 1 END) AS totalasistentes
+        FROM clientes
+        WHERE estado = 'A'
+          AND idcampania = p_idcampania
+          AND (p_colegio IS NULL OR p_colegio = '' OR colegio COLLATE utf8mb4_unicode_ci = p_colegio COLLATE utf8mb4_unicode_ci);
+    END IF;
+END //
+DELIMITER ;

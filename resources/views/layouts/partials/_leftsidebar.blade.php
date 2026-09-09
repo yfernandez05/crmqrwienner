@@ -65,6 +65,7 @@
                         <li><router-link :to="{name: 'spa.tipoAtencion'}">Tipo de atención</router-link></li>
                         <li><router-link :to="{name: 'spa.buttonmessage'}">Botones directos</router-link></li>
                         <li><router-link :to="{name: 'spa.configuracionqrcolor'}">Configuración QR Color</router-link></li>
+                        <li><router-link :to="{name: 'spa.paginadinamica'}">Paginas Dinamicas</router-link></li>
                         <li><router-link :to="{name: 'spa.tipoRecordatorio'}">Tipo de Recordatorio</router-link></li>
                     </ul>
                 </li>
@@ -79,6 +80,12 @@
                     <router-link class="waves-effect waves-dark" :to="{name: 'spa.reporte'}" aria-expanded="false">
                         <i class="fas fa-chart-pie"></i>
                         <span class="hide-menu">Reporte</span>
+                    </router-link>
+                </li>
+                <li>
+                    <router-link class="waves-effect waves-dark" :to="{name: 'spa.reporte.encuesta'}" aria-expanded="false">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span class="hide-menu">Reporte Encuesta</span>
                     </router-link>
                 </li>
                 @endif

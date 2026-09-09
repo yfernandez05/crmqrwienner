@@ -162,6 +162,11 @@ export default new VueRouter({
             name: 'spa.reporte',
             component: require('./components/reporte/ReporteIndex').default
         },
+        {
+            path: `${intranetBaseUrl}/reporte-encuesta`,
+            name: 'spa.reporte.encuesta',
+            component: require('./components/reporte/ReporteEncuestaIndex').default
+        },
 
 
         {
@@ -201,6 +206,11 @@ export default new VueRouter({
             path: `${intranetBaseUrl}/configuracionqrcolor/editar/:id`,
             name: 'spa.configuracionqrcolor.editar',
             component: require('./components/configuracionqrcolor/ConfiguracionQrColorEdit').default
+        },
+        {
+            path: `${intranetBaseUrl}/paginadinamica`,
+            name: 'spa.paginadinamica',
+            component: require('./components/paginadinamica/PaginaDinamicaIndex').default
         },
 
         {

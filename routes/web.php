@@ -13,6 +13,8 @@
 
 use App\Http\Controllers\BuscatuqrController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\EncuestaController;
+use App\Http\Controllers\ReporteController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +34,7 @@ Route::get('crm/{path?}', "SpaController@index")->where('path', '([A-z0-9-\/_.]+
 Route::get('descargatuentrada/{id}/', [ClienteController::class, 'pdfclienteevento'])->name('cliente.descargatuentrada');
 Route::get('/buscatuqr', [BuscatuqrController::class, 'index'])->name('buscatuqr.index');
 Route::get('registro', [ClienteController::class,'showViewRegisterCliente'])->name('cliente.registro');
+Route::get('encuesta', [EncuestaController::class,'showViewEncuesta'])->name('encuesta.public');
 
 //Routes for consume data
 Route::prefix('rest')->name('rest.')->group(function () {
@@ -76,6 +79,10 @@ Route::prefix('rest')->name('rest.')->group(function () {
     Route::post('cliente/saveClientQr', 'ClienteController@saveClientQr')->name('cliente.saveClientQr');
     Route::resource('cliente', 'ClienteController')->except(['show', 'create']);
 
+    Route::get('encuesta/estadisticas', 'EncuestaController@estadisticas')->name('encuesta.estadisticas');
+    Route::post('encuesta/physicallyremove', 'EncuestaController@physicallyRemove')->name('encuesta.physicallyremove');
+    Route::resource('encuesta', 'EncuestaController')->except(['show', 'create']);
+
     Route::resource('clienteevento', 'EventoClienteController');
 
     Route::get('ubigeo/index', 'UbigeoController@index')->name('ubigeo.index');
@@ -106,6 +113,8 @@ Route::prefix('rest')->name('rest.')->group(function () {
     Route::get('reporte/clienteCarrera','ReporteController@clienteCarrera');
     Route::get('reporte/clienteedad','ReporteController@clienteedad');
     Route::get('reporte/clienteinstitucion','ReporteController@clienteinstitucion');
+    Route::get('reporte/encuesta/preguntas', 'EncuestaController@reportePreguntas')->name('reporte.encuesta.preguntas');
+    Route::get('reporte/totales', [ReporteController::class, 'totales']);
 
     Route::post('validateqr','QrCodeController@decryptQRCode');
     Route::post('markattendanceentry','QrCodeController@markAttendanceEntry');
@@ -114,6 +123,10 @@ Route::prefix('rest')->name('rest.')->group(function () {
     Route::resource('buttonmessage', 'ButtonMessageController');
 
     Route::resource('configuracionqrcolor', 'ConfiguracionQrColorController')->except(['create']);
+
+    Route::post('paginadinamica/{id}/toggle', 'PaginaDinamicaController@toggle')->name('paginadinamica.toggle');
+    Route::post('paginadinamica/{id}/regenerar-token', 'PaginaDinamicaController@regenerarToken')->name('paginadinamica.regenerar-token');
+    Route::resource('paginadinamica', 'PaginaDinamicaController')->except(['create']);
 
     Route::get('buscatuqr/search', [BuscatuqrController::class, 'search']);
     Route::post('/cliente/update-autorizacion-imagen', [ClienteController::class, 'updateAutorizacionImagen']);

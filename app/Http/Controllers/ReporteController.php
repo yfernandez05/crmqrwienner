@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Client;
 
 class ReporteController extends BaseController
 {
-    public function cantidadclientesevento(Request $request){  
+    public function cantidadclientesevento(Request $request){
 
         /* $eventos = Cliente::with('evento')->whereHas('evento')->select('eventos.idevento', 'eventos.nombreevento' ,DB::raw('count(clientes.idcliente) as total'));
 
@@ -21,10 +21,10 @@ class ReporteController extends BaseController
             //filtro mostrar campania  que pertenecen a una cuenta
             $eventos->whereHas('evento.campania', function ($query)  {
                 $query->where('idcuenta', '=', $this->user->idcuenta);
-            });             
+            });
         }
 
-        $clientefiltereventos = $eventos 
+        $clientefiltereventos = $eventos
         ->join('eventos', 'clientes.idevento', '=', 'eventos.idevento')
         ->where('clientes.estado' , '=', RuleManager::ACTIVE_STATE)
         ->groupBy('eventos.idevento')
@@ -37,7 +37,7 @@ class ReporteController extends BaseController
                 $request->idcampania,
             ]
         );
-        
+
 
         return $clientefiltereventos;
     }
@@ -68,8 +68,8 @@ class ReporteController extends BaseController
                 ]
             );
         }
-        
-        
+
+
 
         $totalProspectos = collect($store)->sum('total');
 
@@ -152,7 +152,7 @@ class ReporteController extends BaseController
         return $store;
     }
 
-    
+
     public function registroprocedencia(Request $request){
         $store = DB::select(
             'CALL SP_RP_REGISTROS_PROCEDENCIAS(?,?,?,?,?)',
@@ -208,6 +208,20 @@ class ReporteController extends BaseController
                 ]
         );
         return $store;
+    }
+
+    public function totales(Request $request)
+    {
+        $idevento   = $request->idevento ?? 0;
+        $idcampania = $request->idcampania;
+        $idcolegio  = $request->idcolegio ?? null;
+        $import     = $request->import ?? 0;
+
+        $result = DB::select('CALL SP_RP_TOTALES_REGISTRO_ASISTENCIA(?,?,?,?)', [
+            $idevento, $idcampania, $idcolegio, $import
+        ]);
+
+        return response()->json($result[0] ?? ['totalregistrados' => 0, 'totalasistentes' => 0]);
     }
 
 }
